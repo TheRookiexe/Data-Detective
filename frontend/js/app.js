@@ -1,0 +1,1 @@
+console.log("Data Detective frontend loaded")
