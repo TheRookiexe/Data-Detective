@@ -14,9 +14,9 @@ FRONTEND_DIR = Path(__file__).resolve().parents[2]/"frontend"
 
 app.include_router(router=router, prefix="/api")
 
-app.mount("/css", StaticFiles(directory=FRONTEND_DIR/"css"), name='css')
+app.mount("/css", StaticFiles(directory=FRONTEND_DIR/"css"), name="css")
 app.mount("/js", StaticFiles(directory=FRONTEND_DIR/"js"), name="js")
-app.mount('/assets', StaticFiles(directory=FRONTEND_DIR/"assets"), name="assets")
+app.mount("/assets", StaticFiles(directory=FRONTEND_DIR/"assets"), name="assets")
 
 @app.get("/", include_in_schema=False)
 def homepage():     
