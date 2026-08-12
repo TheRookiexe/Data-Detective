@@ -8,9 +8,9 @@ def analyze_overview(df):
         for col in df.columns
     ]
     return{
-            "rows": df.shape[0],
-            "columns": df.shape[1],
-            "column_names": df.columns.tolist(),
-            "data_types": df_datatypes
-        }
+        "rows": df.shape[0],
+        "columns": df.shape[1],
+        "column_names": df.columns.tolist(),
+        "data_types": df_datatypes
+    }
 

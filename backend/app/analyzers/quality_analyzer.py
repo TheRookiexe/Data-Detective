@@ -7,7 +7,7 @@ def analyze_quality(df):
         }
         for col in df.columns
     ]
-
+    
     memory_usage_mb = round(float((df.memory_usage(deep=True).sum()) / 100000),2)
 
     return {
