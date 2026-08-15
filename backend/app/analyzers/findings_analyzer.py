@@ -2,6 +2,7 @@ def analyze_findings(overview, quality):
     # missing values
     missing_vals =  quality["missing_values"]
     curr_col_per = 0
+    curr_col = ''
     for col in missing_vals:
         if float(col["percentage"]) > curr_col_per:
             curr_col_per = round(col["percentage"],2)
@@ -47,6 +48,20 @@ def analyze_findings(overview, quality):
         numeric_columns_percentage
     ]
 
+
     return{
         "insights":insights,
+        "data":{
+            "data_completeness": quality["dataset_completeness"],
+            "duplicate_rows": quality["duplicated_rows"],
+            "highest_missing": {
+                "column": curr_col,
+                "percentage": curr_col_per,
+            },
+            "numeric_columns_percentage": {
+                "count": numeric,
+                "total": int(len(overview_data_type)),
+                "percentage": numeric_percentage,
+            }
+        }
     }
