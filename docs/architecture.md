@@ -6,31 +6,43 @@ Data Detective follows a **frontend-backend separation** with an **API-first arc
 
 The frontend is responsible for presenting information and handling user interactions, while the backend is responsible for processing datasets and exposing analysis results through REST APIs.
 
-This separation keeps both layers independent and allows either side to evolve without tightly coupling implementation details.
+The backend uses a **modular analysis architecture**, where individual analyzers are responsible for specific aspects of dataset analysis. An analysis engine orchestrates these analyzers and combines their results into a single response.
+
+This separation keeps the layers independent and allows individual parts of the application to evolve without tightly coupling implementation details.
 
 ---
 
 # High-Level Architecture
 
 ```text
-                Browser
-                    │
-                    ▼
-       HTML • CSS • JavaScript
-                    │
-                    ▼
-              FastAPI Backend
-                    │
-          ┌─────────┴─────────┐
-          │                   │
-          ▼                   ▼
-     API Endpoints      Static Files
-          │
-          ▼
-     Analysis Engine
-          │
-          ▼
-     Individual Analyzers
+                         Browser
+                            │
+                            ▼
+                  HTML • CSS • JavaScript
+                            │
+                            ▼
+                    FastAPI Backend
+                            │
+              ┌─────────────┴─────────────┐
+              │                           │
+              ▼                           ▼
+        API Endpoints                Static Files
+              │
+              ▼
+       Analysis Engine
+              │
+       ┌──────┼──────────┬────────────┬──────────────┐
+       ▼      ▼          ▼            ▼              ▼
+   Overview Quality  Findings  Recommendations Visualization
+   Analyzer Analyzer Analyzer    Analyzer          Analyzer
+       │      │          │            │              │
+       └──────┴──────────┴────────────┴──────────────┘
+                            │
+                            ▼
+                       JSON Response
+                            │
+                            ▼
+                     Frontend Dashboard
 ```
 
 ---
@@ -39,9 +51,12 @@ This separation keeps both layers independent and allows either side to evolve w
 
 ## Frontend Request
 
+The frontend is served by the FastAPI application.
+
 ```text
 Browser
     │
+    ▼
 GET /
     │
     ▼
@@ -50,13 +65,13 @@ FastAPI
     ▼
 frontend/index.html
     │
-    ▼
-Browser loads CSS and JavaScript
+    ├── CSS
+    └── JavaScript
 ```
 
----
-
 ## Analysis Request
+
+Dataset analysis follows a single API endpoint.
 
 ```text
 User uploads dataset
@@ -65,13 +80,25 @@ User uploads dataset
 POST /api/analyze
         │
         ▼
-FastAPI
+API Route
+        │
+        ▼
+Read uploaded CSV
+        │
+        ▼
+Pandas DataFrame
         │
         ▼
 Analysis Engine
         │
+        ├── Overview Analyzer
+        ├── Quality Analyzer
+        ├── Findings Analyzer
+        ├── Recommendation Analyzer
+        └── Visualization Analyzer
+        │
         ▼
-Analyzers
+Combined Analysis Result
         │
         ▼
 JSON Response
@@ -82,214 +109,676 @@ Frontend Dashboard
 
 ---
 
-# Backend Structure
+# Backend Architecture
+
+The backend is organized into separate layers:
 
 ```text
 backend/app/
 
-api/
-analyzers/
-config/
-engine/
-schemas/
-utils/
+├── api/
+├── analyzers/
+├── config/
+├── engine/
+├── schemas/
+├── utils/
+└── main.py
 ```
 
-## Responsibilities
+Each layer has a specific responsibility.
 
-### api/
+---
 
-Contains REST API endpoints.
+## api/
+
+```text
+backend/app/api/
+```
+
+The API layer contains the application's REST endpoints.
+
+Current API routes include:
+
+```text
+GET  /api/health
+POST /api/analyze
+```
 
 The API layer should remain thin and primarily:
 
 * Receive requests
-* Validate input
-* Call the analysis engine
-* Return responses
+* Handle uploaded files
+* Perform basic request-level validation
+* Pass data to the analysis engine
+* Return the analysis result
 
-Business logic should not live here.
-
----
-
-### engine/
-
-Acts as the orchestrator.
-
-The engine coordinates all analyzers and combines their outputs into a single response.
-
-Think of it as the conductor of an orchestra rather than the musician playing every instrument.
+Analysis and business logic should not be implemented directly inside the API routes.
 
 ---
 
-### analyzers/
+## engine/
 
-Each analyzer has a single responsibility.
+```text
+backend/app/engine/
+```
 
-Current analyzers include:
+The analysis engine acts as the **orchestrator** for the analysis process.
+
+Its responsibility is to:
+
+* Receive the prepared dataset
+* Run the required analyzers
+* Pass analyzer results to analyzers that depend on previous results
+* Combine the individual results
+* Return the final structured analysis
+
+The engine can be thought of as the **conductor of an orchestra** rather than the musician playing every instrument.
+
+The engine coordinates the analyzers, while the analyzers contain the actual analysis logic.
+
+---
+
+## analyzers/
+
+```text
+backend/app/analyzers/
+```
+
+Each analyzer is responsible for one specific aspect of dataset analysis.
+
+Current analyzers are:
 
 * Overview Analyzer
 * Quality Analyzer
-* Visualization Analyzer
 * Findings Analyzer
 * Recommendation Analyzer
-
-New analyzers should be added without requiring changes to existing analyzers whenever possible.
-
----
-
-### schemas/
-
-Contains Pydantic request and response models.
-
-This keeps API validation separate from business logic.
+* Visualization Analyzer
 
 ---
 
-### config/
+### Overview Analyzer
 
-Stores application configuration, constants, and future settings.
+The Overview Analyzer provides basic structural information about the dataset.
+
+It currently analyzes:
+
+* Number of rows
+* Number of columns
+* Column names
+* Column data types
+
+Example:
+
+```json
+{
+    "filename": "apps.csv",
+    "rows": 10841,
+    "columns": 12,
+    "column_names": [
+        "App",
+        "Category",
+        "Rating"
+    ],
+    "data_types": [
+        {
+            "column": "Rating",
+            "data_type": "float64"
+        }
+    ]
+}
+```
+
+The overview information can also be consumed by other analyzers.
+
+For example, the Visualization Analyzer uses the detected data types when deciding what type of visualization may be appropriate for a column.
 
 ---
 
-### utils/
+### Quality Analyzer
 
-Contains helper functions shared across multiple modules.
+The Quality Analyzer evaluates the basic quality and completeness of the dataset.
 
-Utility functions should only be placed here if they are genuinely reusable.
+It currently checks:
+
+* Missing values per column
+* Missing-value percentage per column
+* Duplicate rows
+* Dataset memory usage
+* Dataset completeness
+
+Dataset completeness represents the percentage of rows containing **no missing values across any column**.
+
+The calculation uses the same general `NaN`-based missing-value logic used by the missing-value analysis.
+
+The frontend should explain this definition to users so that the meaning of the completeness percentage remains transparent.
+
+Example:
+
+```json
+{
+    "missing_values": [
+        {
+            "column": "Rating",
+            "missing": 1474,
+            "percentage": 13.6
+        }
+    ],
+    "duplicated_rows": 483,
+    "memory_usage_mb": 60.12,
+    "dataset_completeness": 86.39
+}
+```
 
 ---
 
-# Frontend Structure
+### Findings Analyzer
+
+The Findings Analyzer converts raw analysis results into human-readable observations about the dataset.
+
+It currently produces findings related to:
+
+* Dataset completeness
+* Duplicate rows
+* Highest missing-value percentage
+* Numeric-column distribution
+
+The analyzer also returns structured data containing the values used to generate these findings.
+
+This allows later analyzers, particularly the Recommendation Analyzer, to reuse calculated information instead of recalculating the same values.
+
+Example:
+
+```json
+{
+    "insights": [
+        "The dataset has moderate completeness, with 86.39% of rows containing no missing values.",
+        "483 duplicate rows were detected.",
+        "Rating column has the highest missing-value rate at 13.6%.",
+        "3 of 12 columns are numeric (25.0%)."
+    ],
+    "data": {
+        "data_completeness": 86.39,
+        "duplicate_rows": 483,
+        "highest_missing": {
+            "column": "Rating",
+            "percentage": 13.6
+        },
+        "numeric_columns_percentage": {
+            "count": 3,
+            "total": 12,
+            "percentage": 25
+        }
+    }
+}
+```
+
+The structured `data` section is intended for internal reuse, while `insights` is intended for presentation to the user.
+
+---
+
+### Recommendation Analyzer
+
+The Recommendation Analyzer uses the results of the quality and findings analysis to generate actionable suggestions.
+
+Current recommendations include suggestions related to:
+
+* Missing values
+* Duplicate rows
+* Dataset completeness
+
+For example:
+
+```text
+Review the 1477 missing values across the dataset,
+particularly in the Rating column.
+
+Review the 483 duplicated rows and remove them
+if they represent repeated records.
+```
+
+Recommendations are intentionally kept separate from findings.
+
+**Findings describe what was detected.**
+
+**Recommendations suggest what the user could consider doing about it.**
+
+This separation allows the recommendation system to become more sophisticated later without changing the underlying quality analysis.
+
+---
+
+### Visualization Analyzer
+
+The Visualization Analyzer determines what types of visualizations may be appropriate for individual columns.
+
+It currently considers:
+
+* Numeric columns
+* Non-numeric columns
+* Unique-value counts
+* Potential identifier columns
+* High-cardinality columns
+
+Current visualization decisions include:
+
+| Column characteristic | Suggested visualization |
+|---|---|
+| Numeric column | Histogram |
+| Low-cardinality non-numeric column | Bar chart |
+| High-cardinality non-numeric column | High-cardinality indicator |
+| Numeric identifier column | Identifier |
+
+Identifier detection currently uses column naming patterns such as `id` or `parent_id`.
+
+The analyzer currently returns visualization metadata rather than generating the actual charts.
+
+This keeps visualization **analysis and recommendation** separate from frontend rendering.
+
+---
+
+## schemas/
+
+```text
+backend/app/schemas/
+```
+
+Contains Pydantic models for API request and response schemas.
+
+Schemas provide a dedicated location for API validation and response contracts as the project grows.
+
+They are intentionally kept separate from the analysis logic.
+
+---
+
+## config/
+
+```text
+backend/app/config/
+```
+
+Contains application configuration, constants, and future settings.
+
+Configuration should be moved here when values need to be shared or managed centrally.
+
+---
+
+## utils/
+
+```text
+backend/app/utils/
+```
+
+Contains helper functions that are genuinely reusable across multiple parts of the backend.
+
+Utility functions should only be placed here when they have a clear shared purpose.
+
+---
+
+# Analyzer Dependencies
+
+Not every analyzer operates independently.
+
+Some analyzers consume the results produced by other analyzers.
+
+The current dependency flow is approximately:
+
+```text
+                    DataFrame
+                        │
+                        ▼
+                    Overview
+                        │
+                        ▼
+                     Quality
+                        │
+              ┌─────────┴─────────┐
+              ▼                   ▼
+          Findings        Visualization
+              │
+              ▼
+       Recommendations
+```
+
+For example:
+
+* Findings uses Overview and Quality results.
+* Recommendations uses Quality and Findings results.
+* Visualization uses the dataset together with Overview information.
+
+The analysis engine is responsible for coordinating these dependencies.
+
+---
+
+# Single Analysis Endpoint
+
+All analysis functionality is exposed through:
+
+```text
+POST /api/analyze
+```
+
+The endpoint accepts an uploaded CSV dataset and returns the combined analysis.
+
+The response is structured into analyzer-specific sections:
+
+```json
+{
+    "overview": {},
+    "quality": {},
+    "findings": {},
+    "recommendations": {},
+    "visualizations": {}
+}
+```
+
+This approach keeps the external API simple while allowing the internal analysis system to remain modular.
+
+New analyzers can be added to the analysis engine without requiring a new public API endpoint for every analyzer.
+
+---
+
+# Frontend Architecture
 
 ```text
 frontend/
 
-assets/
-css/
-js/
-components/
-index.html
+├── assets/
+├── components/
+├── css/
+├── js/
+└── index.html
 ```
 
-## Responsibilities
+The frontend is responsible for presenting analysis results and handling user interaction.
 
-### assets/
+---
 
-Static resources such as:
+## index.html
 
-* Images
-* Icons
+The main entry point for the frontend application.
+
+It provides the basic page structure and loads the required CSS and JavaScript.
+
+---
+
+## css/
+
+Contains application styling.
+
+```text
+frontend/css/
+```
+
+The CSS layer controls the visual appearance of the dashboard.
+
+---
+
+## js/
+
+Contains frontend application logic.
+
+```text
+frontend/js/
+```
+
+The JavaScript layer is responsible for:
+
+* Uploading datasets
+* Communicating with the API
+* Receiving analysis results
+* Updating the interface
+* Handling user interactions
+
+---
+
+## components/
+
+Contains reusable frontend components.
+
+```text
+frontend/components/
+```
+
+This directory may initially remain lightweight.
+
+Reusable components should be introduced when they naturally emerge from the frontend rather than creating abstractions prematurely.
+
+---
+
+## assets/
+
+Contains static frontend resources.
+
+```text
+frontend/assets/
+```
+
+Current asset categories include:
+
 * Fonts
+* Icons
+* Images
 
 ---
 
-### css/
+# Data Flow
 
-Application styling.
+The complete current analysis flow can be represented as:
 
----
-
-### js/
-
-Frontend application logic.
-
-Responsible for:
-
-* API communication
-* UI updates
-* Event handling
-
----
-
-### components/
-
-Reusable frontend components.
-
-This directory may initially remain empty until reusable UI pieces naturally emerge.
+```text
+CSV Upload
+    │
+    ▼
+FastAPI /api/analyze
+    │
+    ▼
+Pandas DataFrame
+    │
+    ▼
+Analysis Engine
+    │
+    ├──────────────────────┐
+    ▼                      ▼
+Overview                Quality
+    │                      │
+    └──────────┬───────────┘
+               ▼
+           Findings
+               │
+        ┌──────┴───────┐
+        ▼              ▼
+Recommendations   Visualizations
+        │              │
+        └──────┬───────┘
+               ▼
+        Combined JSON
+               │
+               ▼
+       Frontend Dashboard
+```
 
 ---
 
 # API Design Principles
 
-All backend endpoints live under:
+All backend API endpoints are grouped under:
 
 ```text
 /api
 ```
 
-Examples:
+Current endpoints:
 
 ```text
 GET  /api/health
-
 POST /api/analyze
 ```
 
-Keeping API endpoints grouped under `/api` avoids conflicts with frontend routes and creates a clear separation of responsibilities.
+Keeping API endpoints under `/api` provides a clear boundary between backend API functionality and frontend resources.
 
 ---
 
 # Design Principles
 
-The project follows these guiding principles:
-
 ## 1. Single Responsibility
 
-Each module should have one clear purpose.
+Each module and analyzer should have one clear purpose.
+
+For example:
+
+* Quality analyzes dataset quality.
+* Findings interprets analysis results.
+* Recommendations suggests possible actions.
+* Visualization determines suitable visualization types.
 
 ---
 
 ## 2. Separation of Concerns
 
-Frontend, API, and analysis logic remain independent.
+Frontend, API, engine, and analyzer responsibilities remain separate.
+
+The frontend should not perform backend analysis, and the API layer should not contain the actual analysis logic.
 
 ---
 
 ## 3. API First
 
-The backend should be usable by any client, not only the current frontend.
+The backend should be usable by clients other than the current frontend.
 
-Future clients may include:
+Potential future clients may include:
 
-* React
+* React applications
 * Mobile applications
 * External integrations
+* Other data-analysis interfaces
 
 ---
 
 ## 4. Modular Analysis
 
-Each analyzer should work independently and contribute one aspect of the overall analysis.
+Each analyzer should focus on one aspect of dataset analysis.
+
+New analysis capabilities should preferably be introduced as new modules rather than making one analyzer increasingly large.
+
+This allows Data Detective to grow incrementally.
 
 ---
 
-## 5. Keep It Simple
+## 5. Reuse Calculated Results
+
+When an analyzer has already calculated information that another analyzer needs, the existing result should be reused instead of duplicating the calculation.
+
+For example:
+
+```text
+Quality
+   │
+   ▼
+Findings
+   │
+   ▼
+Recommendations
+```
+
+Findings can expose structured data that Recommendations can consume directly.
+
+This reduces duplicated logic and keeps calculations centralized.
+
+---
+
+## 6. Keep It Simple
 
 Avoid introducing additional abstractions until they solve a real problem.
 
-Folders and classes should exist because they are needed, not because they appear in common project templates.
+Folders, classes, utilities, and abstractions should exist because they are needed, not simply because they are common in project templates.
+
+---
+
+## 7. Presentation and Analysis Should Remain Separate
+
+Analyzers should provide structured analysis results and metadata.
+
+The frontend should be responsible for deciding how those results are presented visually.
+
+For example, the Visualization Analyzer can determine:
+
+```text
+Rating → histogram
+Category → bar chart
+id → identifier
+```
+
+while the frontend is responsible for actually rendering the corresponding visualization.
+
+---
+
+# Current MVP Scope
+
+The current architecture is intentionally focused on the MVP.
+
+The primary goal is to provide a structured analysis of an uploaded CSV dataset through a single API request.
+
+Current analysis capabilities include:
+
+* Dataset overview
+* Data quality analysis
+* Human-readable findings
+* Basic recommendations
+* Visualization suggestions
+
+More advanced functionality is intentionally deferred until the core workflow is stable.
 
 ---
 
 # Future Architecture
 
-The current architecture is intentionally lightweight.
+The architecture is designed to support future improvements without requiring a complete redesign.
 
-Future enhancements may include:
+Possible future enhancements include:
 
+* More advanced data-quality detection
+* Categorical and semantic data-type detection
+* More sophisticated visualization selection
+* Statistical analysis
+* Outlier detection
+* Data cleaning recommendations
+* Report generation
 * Database integration
 * User authentication
 * Background task processing
-* Report generation
-* AI-powered insight generation
+* AI-powered insights
 
-These additions should extend the existing architecture rather than require a redesign.
+These features should be added incrementally as independent modules or extensions where appropriate.
+
+The modular analyzer architecture makes it possible to introduce these capabilities without changing the fundamental API structure.
 
 ---
 
 # Summary
 
-Data Detective is designed around a modular architecture that emphasizes clarity, maintainability, and incremental growth.
+Data Detective is built around a lightweight, modular architecture that separates:
 
-The focus is on building small, well-defined components that work together to provide users with a structured understanding of their data.
+```text
+Frontend
+    │
+    ▼
+API
+    │
+    ▼
+Analysis Engine
+    │
+    ▼
+Individual Analyzers
+```
+
+The API provides a simple entry point for dataset analysis, while the analysis engine coordinates specialized analyzers.
+
+The current architecture prioritizes:
+
+* Clarity
+* Separation of concerns
+* Modularity
+* Reusability
+* Incremental development
+* Simplicity
+
+The goal is to build a system that is useful in its current MVP form while leaving enough structure for more advanced data-analysis capabilities to be added later.
