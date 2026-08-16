@@ -9,7 +9,7 @@ def analyze_dataset(df, filename):
     quality = analyze_quality(df)
     findings = analyze_findings(overview, quality)
     recommendations = analyze_recommendations(overview, quality, findings)
-    visualizations = analyze_visualizations(overview, quality, findings)
+    visualizations = analyze_visualizations(df, overview, quality, findings)
     return{
         "overview": {
             "filename": filename,
