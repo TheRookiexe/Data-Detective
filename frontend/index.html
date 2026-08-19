@@ -5,10 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Detective</title>
     <link rel="stylesheet" href="/css/style.css">
-    <script src="/js/app.js"></script>
+    <script src="/js/app.js" defer></script>
 </head>
 <body>
-    <h1>Data Detective</h1>
-    <h3>Uderstand. Discover. Decide</h3>
+    <div class="container">
+        <div class="nav">
+            <ul>
+                <li class="menu-item active">
+                    <a href="#home-div" class="scrolly w">Welcome</a>
+                </li>
+                <li class="menu-item">
+                    <a href="#" class="scrolly O">Overview</a>
+                </li>
+                <li class="menu-item">
+                    <a href="#" class="scrolly Q">Quality</a>
+                </li>
+                <li class="menu-item">
+                    <a href="#" class="scrolly F">Findings</a>
+                </li>
+                <li class="menu-item">
+                    <a href="#" class="scrolly R">Recommendations</a>
+                </li>
+                <li class="menu-item">
+                    <a href="#" class="scrolly V">Visualizations</a>
+                </li>
+            </ul>
+        </div>
+        <div id="home-div" class="home-div">
+            <div class="title-div">
+                <p class="title">Data Detective</p>
+                <p class="sub-title">Understand. Discover. Decide</p>
+                <button type="button" id="upload-btn">CHOOSE FILE</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
