@@ -35,7 +35,15 @@
             <div class="title-div">
                 <p class="title">Data Detective</p>
                 <p class="sub-title">Understand. Discover. Decide</p>
+
                 <button type="button" id="upload-btn">CHOOSE FILE</button>
+                <input type="file" name="csv" id="real-file-input" accept=".csv" style="display: none;">
+                
+                <div class="selected-file">
+                    <p id="selected-file-name" style="display: none;"></p>
+                    <img src="./assets/icons/icons8-close-48.png" id="delete-file-btn" alt="Delete File">
+                </div>
+
             </div>
         </div>
     </div>

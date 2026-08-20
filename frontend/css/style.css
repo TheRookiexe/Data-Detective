@@ -179,3 +179,30 @@ ul {
 .menu-item.active::before {
     transform: scaleX(1) !important;
 }
+
+#delete-file-btn {
+    color: #e64040; 
+    font-size: 22px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.selected-file {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 15px;
+}
+
+#delete-file-btn {
+    width: 20px;
+    height: 22px;
+    text-decoration: none;
+    display: none; 
+    cursor: pointer
+}
+
+#selected-file-name {
+    font-size: 20px;
+}
