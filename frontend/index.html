@@ -15,7 +15,7 @@
                     <a href="#home-div" class="scrolly w">Welcome</a>
                 </li>
                 <li class="menu-item">
-                    <a href="#" class="scrolly O">Overview</a>
+                    <a href="#overview-div" class="scrolly O">Overview</a>
                 </li>
                 <li class="menu-item">
                     <a href="#" class="scrolly Q">Quality</a>
@@ -31,23 +31,28 @@
                 </li>
             </ul>
         </div>
-        <div id="home-div" class="home-div">
-            <div class="title-div">
-                <p class="title">Data Detective</p>
-                <p class="sub-title">Understand. Discover. Decide</p>
+        <div class="main-content">
+            <div id="home-div" class="home-div">
+                <div class="title-div">
+                    <p class="title">Data Detective</p>
+                    <p class="sub-title">Understand. Discover. Decide</p>
 
-                <button type="button" id="upload-btn">CHOOSE FILE</button>
-                <input type="file" name="csv" id="real-file-input" accept=".csv" style="display: none;">
-                
-                <div class="selected-file">
-                    <p id="selected-file-name" style="display: none;"></p>
-                    <img src="./assets/icons/icons8-close-48.png" id="delete-file-btn" alt="Delete File">
+                    <button type="button" id="upload-btn">CHOOSE FILE</button>
+                    <input type="file" name="csv" id="real-file-input" accept=".csv" style="display: none;">
+                    
+                    <div class="selected-file">
+                        <p id="selected-file-name" style="display: none;"></p>
+                        <img src="./assets/icons/icons8-close-48.png" id="delete-file-btn" alt="Delete File">
+                    </div>
+
+                    <button type="submit" id="submit-btn">
+                        <span>ANALYZE</span>
+                        <img src="./assets/icons/icons8-detective-32.png" alt="detective-icon">
+                    </button>
                 </div>
-
-                <button type="submit" id="submit-btn">
-                    <span>ANALYZE</span>
-                    <img src="./assets/icons/icons8-detective-32.png" alt="detective-icon">
-                </button>
+            </div>
+            <div id="overview-div">
+                <p>OVERVIEW</p>
             </div>
         </div>
     </div>
