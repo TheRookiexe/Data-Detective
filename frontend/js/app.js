@@ -4,6 +4,8 @@ const fileInput = document.getElementById('real-file-input');
 const fileNameDisplay = document.getElementById('selected-file-name');
 const fileDelBtn = document.getElementById('delete-file-btn');
 const submitBtn = document.getElementById('submit-btn');
+const overviewDiv = document.getElementById('overview-div');
+const fileName = document.getElementById('file-name');
 
 uploadBtn.addEventListener('click', function(){
     fileInput.click();
@@ -55,6 +57,7 @@ submitBtn.addEventListener('click', async(e)=>{
         console.log(result);
 
         submitBtn.textContent = "ANALYZED";
+        renderOverview(analysisResult.overview)
 
     } catch (error) {
 
@@ -68,6 +71,16 @@ submitBtn.addEventListener('click', async(e)=>{
     }
     
 });
+
+function renderOverview(overview){
+    console.log(overview);
+    fileName.textContent = overview.filename;
+    overviewDiv.scrollIntoView({
+        behavior: "smooth"
+    });
+
+}
+
 
 // helper functions
 function resetFileSection(){

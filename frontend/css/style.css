@@ -282,3 +282,34 @@ ul {
     background-position: center;
     background-size: cover;
 }
+
+.overview-container {
+    padding: 30px;
+    display: grid;
+    grid-template: 1fr 1fr 1fr;
+    gap: 20px;
+}
+
+.tab-title {
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    grid-column: 1/2;
+    grid-row: 1/2;
+}
+
+.overview-intro {
+    display: flex;
+    flex-direction: column;
+}
+
+#file-name {
+    padding-top: 10px;
+    font-size: 15px;
+}
+
+#overview-desc {
+    font-size: 20px;
+    color: var(--text-color);
+}
+
