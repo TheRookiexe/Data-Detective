@@ -4,8 +4,14 @@ const fileInput = document.getElementById('real-file-input');
 const fileNameDisplay = document.getElementById('selected-file-name');
 const fileDelBtn = document.getElementById('delete-file-btn');
 const submitBtn = document.getElementById('submit-btn');
+// overview render var
 const overviewDiv = document.getElementById('overview-div');
 const fileName = document.getElementById('file-name');
+const rows = document.getElementById('row');
+const columns = document.getElementById('columns');
+const numeric = document.getElementById('num');
+const text_type = document.getElementById('str');
+const tableBody = document.getElementById("dataTypesBody");
 
 uploadBtn.addEventListener('click', function(){
     fileInput.click();
@@ -52,12 +58,13 @@ submitBtn.addEventListener('click', async(e)=>{
 
         const result = await response.json();
         analysisResult = result;
-
+        const numeric_col_count = analysisResult.findings.data.numeric_columns_percentage.count
+        
         console.log("this is response:");
         console.log(result);
 
         submitBtn.textContent = "ANALYZED";
-        renderOverview(analysisResult.overview)
+        renderOverview(analysisResult.overview, numeric_col_count)
 
     } catch (error) {
 
@@ -72,15 +79,40 @@ submitBtn.addEventListener('click', async(e)=>{
     
 });
 
-function renderOverview(overview){
+function renderOverview(overview, numeric_col_count){
+    overviewDiv.style.display = 'block';
     console.log(overview);
-    fileName.textContent = overview.filename;
+    const totalColumns = overview.columns ?? 0;
+    fileName.textContent = overview.filename || 'N/A';
+    rows.textContent = overview.rows ?? 0;
+    columns.textContent = totalColumns;
+    numeric.textContent = numeric_col_count;
+    text_type.textContent = (totalColumns-numeric_col_count);
+    
+    //columns table render 
+    if (!tableBody) return;
+    tableBody.innerHTML = "";
+    const dataTypes = overview.data_types;
+    console.log(dataTypes);
+    dataTypes.forEach((item) => {
+        const tr = document.createElement("tr");
+
+        const colTd = document.createElement("td");
+        colTd.textContent = item.column ?? 'N/A';
+
+        const typeTd = document.createElement("td");
+        typeTd.textContent = item.data_type ?? 'N/A';
+
+        tr.appendChild(colTd);
+        tr.appendChild(typeTd);
+        tableBody.appendChild(tr);
+    });
+
     overviewDiv.scrollIntoView({
         behavior: "smooth"
     });
 
 }
-
 
 // helper functions
 function resetFileSection(){
