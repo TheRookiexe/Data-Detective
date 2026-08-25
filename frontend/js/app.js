@@ -131,6 +131,8 @@ function renderQuality(quality){
     memoryUsage.textContent = quality.memory_usage_mb+' MB' ?? 0;
     
     // missing value table render
+    if (!missingValTableBody) return;
+    missingValTableBody.innerHTML = "";
     const missingVals = quality.missing_values;
     missingVals.forEach((item) => {
         const tr = document.createElement('tr');
