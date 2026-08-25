@@ -47,7 +47,7 @@ body {
     scroll-behavior: smooth; 
 }
 
-.home-div, #overview-div {
+.home-div, #overview-div, #quality-div {
     min-height: 100vh;
     box-sizing: border-box;
 }
@@ -275,7 +275,7 @@ ul {
     transition: transform 0.1s ease;
 }
 
-#overview-div {
+#overview-div, #quality-div {
     background-color: var(--home-tab-bg-color);
     background-image: url('../assets/images/intro.svg');  
     background-repeat: no-repeat;
@@ -309,12 +309,12 @@ ul {
     font-size: 18px;
 }
 
-#overview-desc {
+#overview-desc, #quality-desc {
     font-size: 20px;
     color: var(--text-color);
 }
 
-.overview-info {
+.overview-info, .quality-info {
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
@@ -371,4 +371,19 @@ tbody tr:nth-child(even) {
     border: 2px solid whitesmoke;
     border-radius: 20px;
     box-shadow: 2px 2px 4px var(--nav-tab-bg-color);
+}
+
+.quality-container {
+    padding: 30px;
+    display: grid;
+    grid-template: 1fr 1fr 1fr 1fr;
+    gap: 20px;
+}
+
+.missing-val-title {
+    font-size: 23px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    grid-row: 4/5;
+    grid-column: 1/2;
 }

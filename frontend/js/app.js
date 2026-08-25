@@ -4,7 +4,8 @@ const fileInput = document.getElementById('real-file-input');
 const fileNameDisplay = document.getElementById('selected-file-name');
 const fileDelBtn = document.getElementById('delete-file-btn');
 const submitBtn = document.getElementById('submit-btn');
-// overview render var
+
+// overview render vars
 const overviewDiv = document.getElementById('overview-div');
 const fileName = document.getElementById('file-name');
 const rows = document.getElementById('row');
@@ -12,6 +13,13 @@ const columns = document.getElementById('columns');
 const numeric = document.getElementById('num');
 const text_type = document.getElementById('str');
 const tableBody = document.getElementById("dataTypesBody");
+
+//Quality render vars
+const qualityDiv = document.getElementById('quality-div');
+const completenessPct = document.getElementById('completness-pct');
+const duplicatedRows = document.getElementById('duplicated-rows');
+const memoryUsage = document.getElementById('memory-usage');
+const missingValTableBody = document.getElementById('missing-values-body');
 
 uploadBtn.addEventListener('click', function(){
     fileInput.click();
@@ -64,7 +72,8 @@ submitBtn.addEventListener('click', async(e)=>{
         console.log(result);
 
         submitBtn.textContent = "ANALYZED";
-        renderOverview(analysisResult.overview, numeric_col_count)
+        renderOverview(analysisResult.overview, numeric_col_count);
+        renderQuality(analysisResult.quality);
 
     } catch (error) {
 
@@ -114,6 +123,44 @@ function renderOverview(overview, numeric_col_count){
 
 }
 
+function renderQuality(quality){
+    qualityDiv.style.display = 'block';
+    console.log(quality);
+    completenessPct.textContent = quality.dataset_completeness ?? 0;
+    duplicatedRows.textContent = quality.duplicated_rows ?? 0;
+    memoryUsage.textContent = quality.memory_usage_mb+' MB' ?? 0;
+    
+    // missing value table render
+    const missingVals = quality.missing_values;
+    missingVals.forEach((item) => {
+        const tr = document.createElement('tr');
+
+        const colTd = document.createElement('td');
+        colTd.textContent = item.column ?? 'N/A';
+
+        const missingTd = document.createElement('td');
+        missingTd.textContent = item.missing ?? 'N/A';
+
+        const pctTd = document.createElement('td');
+        pctTd.textContent = item.percentage ?? 'N/A';
+
+        if(item.percentage>70){
+            tr.style.backgroundColor = 'darkred';
+        }
+
+        if(item.percentage>10 && item.percentage<70){
+            tr.style.backgroundColor = 'orange'
+        }
+
+        tr.appendChild(colTd);
+        tr.appendChild(missingTd);
+        tr.appendChild(pctTd);
+        missingValTableBody.appendChild(tr);
+    });
+    
+}   
+
+
 // helper functions
 function resetFileSection(){
     fileInput.value = '';
@@ -121,8 +168,9 @@ function resetFileSection(){
     fileDelBtn.style.display = 'none';
     fileNameDisplay.style.display = 'none';
     submitBtn.style.display = 'none';
+    qualityDiv.style.display = 'none';
+    overviewDiv.style.display = 'none';
 }
-
 
 menuItems.forEach(item => {
 item.addEventListener('click', function(e) {

@@ -18,7 +18,7 @@
                     <a href="#overview-div" class="scrolly O">Overview</a>
                 </li>
                 <li class="menu-item">
-                    <a href="#" class="scrolly Q">Quality</a>
+                    <a href="#quality-div" class="scrolly Q">Quality</a>
                 </li>
                 <li class="menu-item">
                     <a href="#" class="scrolly F">Findings</a>
@@ -51,6 +51,7 @@
                     </button>
                 </div>
             </div>
+
             <div id="overview-div">
                 <div class="overview-container">
                     <p class="tab-title">OVERVIEW</p>
@@ -91,7 +92,46 @@
                     </div>
                 </div>
             </div>
+
+            <div id="quality-div">
+                <div class="quality-container">
+                    <p class="tab-title">QUALITY</p>
+                    <p id="quality-desc">Data Health & Completness</p>
+                    <div class="quality-info">
+                        <div class="info">
+                            <p id="completness-pct"></p>
+                            <p>Completness</p>
+                        </div>
+                        <div class="info">
+                            <p id="duplicated-rows"></p>
+                            <p>Duplicated Rows</p>
+                        </div>
+                        <div class="info">
+                            <p id="memory-usage"></p>
+                            <p>Memory Usage</p>
+                        </div>
+                    </div>
+                    <p class="missing-val-title">MISSING VALUES</p>
+                    
+                    <div class="column-info">
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                <tr>
+                                    <th>COLUMN</th>
+                                    <th>MISSING</th>
+                                    <th>PRECENTAGE</th>
+                                </tr>
+                                </thead>
+                                <tbody id="missing-values-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                
+                </div>
+            </div>
+
         </div>
     </div>
-</body>
+</body> 
 </html>
