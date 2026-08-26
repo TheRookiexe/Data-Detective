@@ -21,7 +21,7 @@
                     <a href="#quality-div" class="scrolly Q">Quality</a>
                 </li>
                 <li class="menu-item">
-                    <a href="#" class="scrolly F">Findings</a>
+                    <a href="#findings-div">Findings</a>
                 </li>
                 <li class="menu-item">
                     <a href="#" class="scrolly R">Recommendations</a>
@@ -127,10 +127,32 @@
                             </table>
                         </div>
                     </div>
-                
                 </div>
             </div>
 
+            <div id="findings-div">
+                <div class="findings-container">
+                    <p class="tab-title">FINDINGS</p>
+                    <p id="findings-desc">What Data Detective Discovered</p>
+                    <div class="insights">
+                        <img src="./assets/icons/circle-exclamation-solid-full.svg" alt="Completeness-logo">
+                        <p id="completeness-pct-ins"></p>
+                    </div>
+                    <div class="insights">
+                        <img src="./assets/icons/clone-solid-full.svg" alt="duplicated-rows-logo">
+                        <p id="duplicated-rows-ins"></p>
+                    </div>
+                    <div class="insights">
+                        <img src="./assets/icons/triangle-exclamation-solid-full.svg" alt="missing-vals-logo">
+                        <p id="missing-vals-ins"></p>
+                    </div>
+                    <div class="insights">
+                        <img src="./assets/icons/hashtag-solid-full.svg" alt="numeric-cols-logo">
+                        <p id="numeric-cols-ins"></p>
+                    </div>
+                </div>
+            </div>
+            
         </div>
     </div>
 </body> 

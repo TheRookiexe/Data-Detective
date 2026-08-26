@@ -14,12 +14,19 @@ const numeric = document.getElementById('num');
 const text_type = document.getElementById('str');
 const tableBody = document.getElementById("dataTypesBody");
 
-//Quality render vars
+// Quality render vars
 const qualityDiv = document.getElementById('quality-div');
 const completenessPct = document.getElementById('completness-pct');
 const duplicatedRows = document.getElementById('duplicated-rows');
 const memoryUsage = document.getElementById('memory-usage');
 const missingValTableBody = document.getElementById('missing-values-body');
+
+// findings render vars
+const findingsDiv = document.getElementById('findings-div');
+const completenessPctIns = document.getElementById('completeness-pct-ins');
+const duplicatedRowsIns = document.getElementById('duplicated-rows-ins');
+const missingValsIns = document.getElementById('missing-vals-ins');
+const numericColsIns = document.getElementById('numeric-cols-ins');
 
 uploadBtn.addEventListener('click', function(){
     fileInput.click();
@@ -28,7 +35,7 @@ uploadBtn.addEventListener('click', function(){
 fileInput.addEventListener('change', function(e){
     if (fileInput.files.length>0){
         e.stopPropagation();
-        console.log(fileInput.files);
+        // console.log(fileInput.files);
         fileNameDisplay.textContent = ' Selected: '+fileInput.files[0].name;
         fileNameDisplay.style.display = 'block';
         fileDelBtn.style.display = 'block';
@@ -68,12 +75,13 @@ submitBtn.addEventListener('click', async(e)=>{
         analysisResult = result;
         const numeric_col_count = analysisResult.findings.data.numeric_columns_percentage.count
         
-        console.log("this is response:");
-        console.log(result);
+        // console.log("this is response:");
+        // console.log(result);
 
         submitBtn.textContent = "ANALYZED";
         renderOverview(analysisResult.overview, numeric_col_count);
         renderQuality(analysisResult.quality);
+        renderFindings(analysisResult.findings);
 
     } catch (error) {
 
@@ -90,7 +98,7 @@ submitBtn.addEventListener('click', async(e)=>{
 
 function renderOverview(overview, numeric_col_count){
     overviewDiv.style.display = 'block';
-    console.log(overview);
+    // console.log(overview);
     const totalColumns = overview.columns ?? 0;
     fileName.textContent = overview.filename || 'N/A';
     rows.textContent = overview.rows ?? 0;
@@ -125,7 +133,7 @@ function renderOverview(overview, numeric_col_count){
 
 function renderQuality(quality){
     qualityDiv.style.display = 'block';
-    console.log(quality);
+    // console.log(quality);
     completenessPct.textContent = quality.dataset_completeness ?? 0;
     duplicatedRows.textContent = quality.duplicated_rows ?? 0;
     memoryUsage.textContent = quality.memory_usage_mb+' MB' ?? 0;
@@ -147,7 +155,7 @@ function renderQuality(quality){
         pctTd.textContent = item.percentage ?? 'N/A';
 
         if(item.percentage>70){
-            tr.style.backgroundColor = 'darkred';
+            tr.style.backgroundColor = '#D0342C';
         }
 
         if(item.percentage>10 && item.percentage<70){
@@ -159,9 +167,18 @@ function renderQuality(quality){
         tr.appendChild(pctTd);
         missingValTableBody.appendChild(tr);
     });
-    
+
 }   
 
+
+function renderFindings(findings){
+    findingsDiv.style.display = 'block';
+    // console.log(findings.insights);
+    completenessPctIns.textContent = findings.insights[0];
+    duplicatedRowsIns.textContent = findings.insights[1];
+    missingValsIns.textContent = findings.insights[2];
+    numericColsIns.textContent = findings.insights[3];
+}
 
 // helper functions
 function resetFileSection(){

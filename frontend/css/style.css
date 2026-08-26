@@ -47,7 +47,7 @@ body {
     scroll-behavior: smooth; 
 }
 
-.home-div, #overview-div, #quality-div {
+.home-div, #overview-div, #quality-div, #findings-div {
     min-height: 100vh;
     box-sizing: border-box;
 }
@@ -275,7 +275,7 @@ ul {
     transition: transform 0.1s ease;
 }
 
-#overview-div, #quality-div {
+#overview-div, #quality-div, #findings-div {
     background-color: var(--home-tab-bg-color);
     background-image: url('../assets/images/intro.svg');  
     background-repeat: no-repeat;
@@ -309,7 +309,7 @@ ul {
     font-size: 18px;
 }
 
-#overview-desc, #quality-desc {
+#overview-desc, #quality-desc, #findings-desc {
     font-size: 20px;
     color: var(--text-color);
 }
@@ -386,4 +386,33 @@ tbody tr:nth-child(even) {
     letter-spacing: 2px;
     grid-row: 4/5;
     grid-column: 1/2;
+}
+
+.findings-container {
+    padding: 30px;
+    display: grid;
+    grid-template: 1fr 1fr 1fr 1fr 1fr 1fr;
+    gap: 20px;
+}
+
+.insights {
+    background-color: var(--home-tab-bg-color);
+    height: 100px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    overflow: hidden;
+    margin-top: 25px;
+}
+
+.insights > img {
+    height: 30px;
+    width: 30px;
+}
+
+.insights > p {
+    font-size: 20px;
+    color: whitesmoke;
+    flex-wrap: wrap;
 }
