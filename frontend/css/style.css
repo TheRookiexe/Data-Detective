@@ -47,7 +47,7 @@ body {
     scroll-behavior: smooth; 
 }
 
-.home-div, #overview-div, #quality-div, #findings-div {
+.home-div, #overview-div, #quality-div, #findings-div, #recommendations-div {
     min-height: 100vh;
     box-sizing: border-box;
 }
@@ -275,7 +275,7 @@ ul {
     transition: transform 0.1s ease;
 }
 
-#overview-div, #quality-div, #findings-div {
+#overview-div, #quality-div, #findings-div, #recommendations-div {
     background-color: var(--home-tab-bg-color);
     background-image: url('../assets/images/intro.svg');  
     background-repeat: no-repeat;
@@ -309,7 +309,7 @@ ul {
     font-size: 18px;
 }
 
-#overview-desc, #quality-desc, #findings-desc {
+#overview-desc, #quality-desc, #findings-desc, #recommendations-desc {
     font-size: 20px;
     color: var(--text-color);
 }
@@ -395,7 +395,7 @@ tbody tr:nth-child(even) {
     gap: 20px;
 }
 
-.insights {
+.insights, #suggestion-div {
     background-color: var(--home-tab-bg-color);
     height: 100px;
     width: 100%;
@@ -409,13 +409,28 @@ tbody tr:nth-child(even) {
     border-radius: 10px;
 }
 
-.insights > img {
+.insights > img, #recc-img {
     height: 30px;
     width: 30px;
 }
 
-.insights > p {
+.insights > p, #recc-para {
     font-size: 20px;
     color: whitesmoke;
     flex-wrap: wrap;
+}
+
+.recommendations-container  {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 30px;
+    gap: 20px;
+}
+
+#suggestions-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }

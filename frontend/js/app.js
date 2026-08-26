@@ -28,6 +28,11 @@ const duplicatedRowsIns = document.getElementById('duplicated-rows-ins');
 const missingValsIns = document.getElementById('missing-vals-ins');
 const numericColsIns = document.getElementById('numeric-cols-ins');
 
+// recommendations render vars
+const recommendationsDiv = document.getElementById('recommendations-div');
+const suggestionsContainer = document.getElementById('suggestions-container');
+
+
 uploadBtn.addEventListener('click', function(){
     fileInput.click();
 });
@@ -82,6 +87,7 @@ submitBtn.addEventListener('click', async(e)=>{
         renderOverview(analysisResult.overview, numeric_col_count);
         renderQuality(analysisResult.quality);
         renderFindings(analysisResult.findings);
+        renderRecommendations(analysisResult.recommendations);
 
     } catch (error) {
 
@@ -170,14 +176,35 @@ function renderQuality(quality){
 
 }   
 
-
 function renderFindings(findings){
     findingsDiv.style.display = 'block';
     // console.log(findings.insights);
-    completenessPctIns.textContent = findings.insights[0];
-    duplicatedRowsIns.textContent = findings.insights[1];
-    missingValsIns.textContent = findings.insights[2];
-    numericColsIns.textContent = findings.insights[3];
+    completenessPctIns.textContent = findings.insights[0] ?? 'N/A';
+    duplicatedRowsIns.textContent = findings.insights[1] ?? 'N/A';
+    missingValsIns.textContent = findings.insights[2] ?? 'N/A';
+    numericColsIns.textContent = findings.insights[3] ?? 'N/A';
+}
+
+function renderRecommendations(recommendations){
+    recommendationsDiv.style.display = 'block';
+    // console.log(recommendations.suggestions);
+    reccs = recommendations.suggestions;
+    suggestionsContainer.innerHTML = "";
+    reccs.forEach((item) => {
+        const suggestionsDiv = document.createElement('div');
+        suggestionsDiv.id = 'suggestion-div';
+        const recImg = document.createElement('img');
+        recImg.id = 'recc-img';
+        recImg.src = '../assets/icons/lightbulb-solid-full.svg'
+        const recPara = document.createElement('p');
+        recPara.id = 'recc-para';
+        recPara.textContent = item ?? 'N/A';
+
+        suggestionsContainer.appendChild(suggestionsDiv);
+        suggestionsDiv.appendChild(recImg);
+        suggestionsDiv.appendChild(recPara);
+    });
+
 }
 
 // helper functions
