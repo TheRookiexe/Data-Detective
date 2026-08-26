@@ -404,6 +404,9 @@ tbody tr:nth-child(even) {
     gap: 20px;
     overflow: hidden;
     margin-top: 25px;
+    justify-content: flex-start;
+    align-items: center;
+    border-radius: 10px;
 }
 
 .insights > img {
