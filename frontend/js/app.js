@@ -218,9 +218,48 @@ function resetFileSection(){
     overviewDiv.style.display = 'none';
 }
 
+
+const sections = document.querySelectorAll('#home-div, #overview-div, #quality-div, #findings-div, #recommendations-div');
+
 menuItems.forEach(item => {
-item.addEventListener('click', function(e) {
-    document.querySelector('.menu-item.active')?.classList.remove('active');
-    this.classList.add('active');
+    item.addEventListener('click', function() {
+        let targetId = this.textContent.trim().toLowerCase() + '-div';
+        
+        if (targetId === 'welcome-div') {
+            targetId = 'home-div';
+        }
+
+        const targetSection = document.getElementById(targetId);
+
+        if (targetSection) {
+            targetSection.scrollIntoView({ behavior: 'smooth' });
+        }
+    });
 });
-});
+
+const observerOptions = {
+    root: null, 
+    rootMargin: '-20% 0px -60% 0px',
+    threshold: 0
+};
+
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            const currentId = entry.target.id;
+            menuItems.forEach(item => {
+                const itemText = item.textContent.trim().toLowerCase();
+                const isMatch = (currentId === 'home-div' && itemText === 'welcome') || 
+                                (currentId === `${itemText}-div`);
+
+                if (isMatch) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        }
+    });
+}, observerOptions);
+
+sections.forEach(section => observer.observe(section));
