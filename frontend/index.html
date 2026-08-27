@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Detective</title>
     <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
     <script src="/js/app.js" defer></script>
 </head>
 <body>
@@ -27,7 +28,7 @@
                     <a href="#recommendations-div" class="scrolly R">Recommendations</a>
                 </li>
                 <li class="menu-item">
-                    <a href="#" class="scrolly V">Visualizations</a>
+                    <a href="#visualizations-div" class="scrolly V">Visualizations</a>
                 </li>
             </ul>
         </div>
@@ -157,11 +158,18 @@
                 <div class="recommendations-container">
                     <p class="tab-title">RECOMMENDATIONS</p>
                     <p id="recommendations-desc">What You Can Do</p>
-                    <div id="suggestions-container">
-                        
-                    </div>
+                    <div id="suggestions-container"></div>
                 </div>
             </div>
+
+            <div id="visualizations-div">
+                <div class="visualizations-container">
+                    <p class="tab-title">VISUALIZATIONS</p>
+                    <p id="visualizations-desc">Explore Patterns And Distributions In Your Dataset </p>
+                    <div id="vis-div"></div>
+                </div>
+            </div>
+
         </div>
     </div>
 </body> 

@@ -32,6 +32,10 @@ const numericColsIns = document.getElementById('numeric-cols-ins');
 const recommendationsDiv = document.getElementById('recommendations-div');
 const suggestionsContainer = document.getElementById('suggestions-container');
 
+// visualizations render var 
+const visualizationsDiv = document.getElementById('visualizations-div');
+const visCont = document.getElementById('vis-div');
+
 
 uploadBtn.addEventListener('click', function(){
     fileInput.click();
@@ -88,6 +92,7 @@ submitBtn.addEventListener('click', async(e)=>{
         renderQuality(analysisResult.quality);
         renderFindings(analysisResult.findings);
         renderRecommendations(analysisResult.recommendations);
+        renderVisualizations(analysisResult.visualizations);
 
     } catch (error) {
 
@@ -207,6 +212,242 @@ function renderRecommendations(recommendations){
 
 }
 
+function renderVisualizations(visualizations) {
+
+    visualizationsDiv.style.display = 'block';
+
+    if (!visCont) return;
+
+    visCont.innerHTML = "";
+
+    visualizations.vis.forEach((visualization) => {
+
+        if (visualization.type === "histogram") {
+
+            renderHistogram(visCont, visualization);
+
+        } else if (visualization.type === "bar") {
+
+            renderBarChart(visCont, visualization);
+
+        } else if (visualization.type === "identifier") {
+
+            renderIdentifier(visCont, visualization);
+
+        } else if (visualization.type === "high_cardinality") {
+
+            renderHighCardinality(visCont, visualization);
+        }
+    });
+}
+
+
+function renderHistogram(visCont, visualization) {
+
+    const card = document.createElement("div");
+    card.className = "visualization-card";
+
+    const header = document.createElement("div");
+    header.className = "visualization-header";
+
+    const title = document.createElement("p");
+    title.className = "visualization-title";
+    title.textContent = visualization.column;
+
+    const type = document.createElement("span");
+    type.className = "visualization-type";
+    type.textContent = "Histogram";
+
+    header.appendChild(title);
+    header.appendChild(type);
+
+    const meta = document.createElement("p");
+    meta.className = "visualization-meta";
+    meta.textContent = `${visualization.unique_values} unique values`;
+
+    const chart = document.createElement("div");
+    chart.className = "visualization-chart";
+
+    card.appendChild(header);
+    card.appendChild(meta);
+    card.appendChild(chart);
+
+    visCont.appendChild(card);
+
+    const trace = {
+        x: visualization.data.bins,
+        y: visualization.data.counts,
+        type: "bar"
+    };
+
+    const layout = {
+        title: "Distribution",
+        xaxis: {
+            title: visualization.column
+        },
+        yaxis: {
+            title: "Frequency"
+        },
+        margin: {
+            t: 50,
+            r: 20,
+            b: 60,
+            l: 60
+        },
+        autosize: true
+    };
+
+    Plotly.newPlot(chart, [trace], layout, {
+        responsive: true,
+        displayModeBar: false
+    });
+}
+
+
+function renderBarChart(visCont, visualization) {
+
+    const card = document.createElement("div");
+    card.className = "visualization-card";
+
+    const header = document.createElement("div");
+    header.className = "visualization-header";
+
+    const title = document.createElement("p");
+    title.className = "visualization-title";
+    title.textContent = visualization.column;
+
+    const type = document.createElement("span");
+    type.className = "visualization-type";
+    type.textContent = "Bar Chart";
+
+    header.appendChild(title);
+    header.appendChild(type);
+
+    const meta = document.createElement("p");
+    meta.className = "visualization-meta";
+    meta.textContent = `${visualization.unique_values} unique values`;
+
+    const chart = document.createElement("div");
+    chart.className = "visualization-chart";
+
+    card.appendChild(header);
+    card.appendChild(meta);
+    card.appendChild(chart);
+
+    visCont.appendChild(card);
+
+    const trace = {
+        x: visualization.data.labels,
+        y: visualization.data.values,
+        type: "bar"
+    };
+
+    const layout = {
+        title: "Distribution",
+        xaxis: {
+            title: visualization.column
+        },
+        yaxis: {
+            title: "Count"
+        },
+        margin: {
+            t: 50,
+            r: 20,
+            b: 70,
+            l: 60
+        },
+        autosize: true
+    };
+
+    Plotly.newPlot(chart, [trace], layout, {
+        responsive: true,
+        displayModeBar: false
+    });
+}
+
+
+function renderIdentifier(visCont, visualization) {
+
+    const card = document.createElement("div");
+
+    card.className = "visualization-card";
+
+    card.innerHTML = `
+        <div class="visualization-header">
+
+            <p class="visualization-title">
+                ${visualization.column}
+            </p>
+
+            <span class="visualization-type">
+                Identifier
+            </span>
+
+        </div>
+
+        <p class="visualization-meta">
+            ${visualization.unique_values} unique values
+        </p>
+
+        <div class="visualization-info">
+
+            <p class="visualization-info-title">
+                Identifier column
+            </p>
+
+            <p class="visualization-info-text">
+                This column appears to be an identifier
+                and is not suitable for visualization.
+            </p>
+
+        </div>
+    `;
+
+    visCont.appendChild(card);
+}
+
+
+function renderHighCardinality(visCont, visualization) {
+
+    const card = document.createElement("div");
+
+    card.className = "visualization-card";
+
+    card.innerHTML = `
+        <div class="visualization-header">
+
+            <p class="visualization-title">
+                ${visualization.column}
+            </p>
+
+            <span class="visualization-type">
+                High Cardinality
+            </span>
+
+        </div>
+
+        <p class="visualization-meta">
+            ${visualization.unique_values} unique values
+        </p>
+
+        <div class="visualization-info">
+
+            <p class="visualization-info-title">
+                Too many unique values
+            </p>
+
+            <p class="visualization-info-text">
+                A standard chart may be difficult
+                to interpret for this column.
+            </p>
+
+        </div>
+    `;
+
+    visCont.appendChild(card);
+}
+
+
 // helper functions
 function resetFileSection(){
     fileInput.value = '';
@@ -219,7 +460,7 @@ function resetFileSection(){
 }
 
 
-const sections = document.querySelectorAll('#home-div, #overview-div, #quality-div, #findings-div, #recommendations-div');
+const sections = document.querySelectorAll('#home-div, #overview-div, #quality-div, #findings-div, #recommendations-div, #visualizations-div');
 
 menuItems.forEach(item => {
     item.addEventListener('click', function() {
