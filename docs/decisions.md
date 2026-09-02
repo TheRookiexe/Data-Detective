@@ -14,21 +14,24 @@ The goal is to capture not only **what** decisions were made, but also **why** t
 
 The project uses separate `frontend/` and `backend/` directories instead of embedding the frontend directly inside backend templates.
 
+The frontend is responsible for presentation and user interaction, while the backend provides the API and performs dataset analysis.
+
 ## Rationale
 
 Separating the frontend and backend creates a cleaner architecture and allows each layer to evolve independently.
 
 Benefits include:
 
-* Better separation of concerns
-* Cleaner project organization
-* Backend APIs remain usable by multiple clients
-* Easier future migration to a frontend framework such as React
+- Better separation of concerns
+- Cleaner project organization
+- Backend APIs remain usable by multiple clients
+- Easier future migration to a frontend framework
+- Clear separation between presentation and analysis logic
 
 ## Alternatives Considered
 
-* FastAPI templates using Jinja2
-* Traditional server-rendered templates
+- FastAPI templates using Jinja2
+- Traditional server-rendered templates
 
 These approaches were not selected because they would couple the presentation layer more closely to the backend.
 
@@ -50,12 +53,14 @@ An API-first architecture keeps the backend independent from the current fronten
 
 The same backend can potentially support:
 
-* Web applications
-* Mobile applications
-* Future frontend frameworks
-* External integrations
+- Web applications
+- Mobile applications
+- Future frontend frameworks
+- External integrations
 
 It also establishes a clear boundary between presentation and analysis logic.
+
+The completed MVP uses this separation between the frontend interface and the FastAPI analysis API.
 
 ---
 
@@ -67,15 +72,15 @@ It also establishes a clear boundary between presentation and analysis logic.
 
 Dataset analysis is divided into multiple specialized analyzers coordinated by a central analysis engine.
 
-Current analyzers include:
+The completed MVP includes:
 
-* Overview Analyzer
-* Quality Analyzer
-* Findings Analyzer
-* Recommendation Analyzer
-* Visualization Analyzer
+- Overview Analyzer
+- Quality Analyzer
+- Findings Analyzer
+- Recommendation Analyzer
+- Visualization Analyzer
 
-The analysis engine is responsible for orchestrating these analyzers and combining their results.
+The analysis engine is responsible for orchestrating these analyzers and combining their results into the final analysis response.
 
 ## Rationale
 
@@ -95,9 +100,7 @@ New analyzers can also be introduced without turning a single analysis module in
 
 All dataset analysis is exposed through a single endpoint:
 
-```text
-POST /api/analyze
-```
+    POST /api/analyze
 
 The endpoint accepts the uploaded dataset and passes it to the analysis engine.
 
@@ -107,13 +110,11 @@ The engine coordinates the individual analyzers and returns a combined response.
 
 The user should not need to make separate API requests for:
 
-```text
-Overview
-Quality
-Findings
-Recommendations
-Visualizations
-```
+    Overview
+    Quality
+    Findings
+    Recommendations
+    Visualizations
 
 These analyses are parts of the same dataset-analysis workflow.
 
@@ -123,13 +124,11 @@ A single endpoint keeps the public API simple while allowing the internal archit
 
 Separate endpoints such as:
 
-```text
-POST /api/overview
-POST /api/quality
-POST /api/findings
-POST /api/recommendations
-POST /api/visualizations
-```
+    POST /api/overview
+    POST /api/quality
+    POST /api/findings
+    POST /api/recommendations
+    POST /api/visualizations
 
 This was not selected for the MVP because it would require multiple requests for a single analysis operation and unnecessarily expose internal analyzer boundaries through the public API.
 
@@ -143,24 +142,23 @@ The analyzers remain separate internally even though they share one public analy
 
 ## Decision
 
-API routes should remain lightweight.
+API routes remain lightweight.
 
 The API layer is responsible for:
 
-* Receiving requests
-* Handling uploaded files
-* Performing request-level validation
-* Preparing the dataset
-* Calling the analysis engine
-* Returning the result
+- Receiving requests
+- Handling uploaded files
+- Preparing the dataset
+- Calling the analysis engine
+- Returning the result
 
-Analysis and business logic should remain outside the API layer.
+Analysis logic remains outside the API layer.
 
 ## Rationale
 
 Keeping API routes thin prevents analysis logic from becoming tightly coupled to HTTP handling.
 
-For example, the `/api/analyze` route reads the uploaded CSV into a Pandas DataFrame and passes it to the analysis engine rather than performing individual quality, findings, or visualization calculations itself.
+The `/api/analyze` route reads the uploaded CSV into a Pandas DataFrame and passes it to the analysis engine rather than performing individual quality, findings, or visualization calculations itself.
 
 This keeps the analysis engine reusable and easier to test independently.
 
@@ -172,20 +170,22 @@ This keeps the analysis engine reusable and easier to test independently.
 
 ## Decision
 
-The frontend is currently served as static files by FastAPI.
+The completed MVP uses a static frontend consisting of:
 
-The frontend consists of:
+- HTML
+- CSS
+- Vanilla JavaScript
+- Static assets
 
-* HTML
-* CSS
-* JavaScript
-* Static assets
+The frontend is served by the FastAPI application as part of the deployed application.
 
 ## Rationale
 
-This keeps the MVP development workflow simple while maintaining a clear separation between frontend and backend responsibilities.
+This keeps the MVP simple while still providing a complete user-facing application.
 
-The frontend can later be replaced by a dedicated framework without requiring the analysis architecture to be redesigned.
+Using vanilla JavaScript avoids introducing framework complexity when the current requirements can be satisfied with standard browser technologies.
+
+The frontend can later be replaced or migrated to a dedicated framework without requiring the analysis architecture to be redesigned.
 
 ---
 
@@ -199,14 +199,14 @@ Backend API endpoints use the `/api` prefix.
 
 Current endpoints include:
 
-```text
-GET  /api/health
-POST /api/analyze
-```
+    GET  /api/health
+    POST /api/analyze
 
 ## Rationale
 
 A dedicated API namespace clearly separates backend services from frontend resources and reduces the possibility of route conflicts.
+
+It also provides a consistent boundary for future API expansion.
 
 ---
 
@@ -220,15 +220,15 @@ Additional layers, folders, classes, and abstractions should only be introduced 
 
 Structures intentionally avoided at the current stage include:
 
-* Repository layer
-* Service layer
-* Controller layer
-* Unnecessary utility abstractions
-* Additional API layers
+- Repository layer
+- Unnecessary service abstractions
+- Controller layer
+- Unnecessary utility abstractions
+- Additional API layers
 
 ## Rationale
 
-Data Detective is currently an MVP.
+Data Detective is an MVP, and the completed implementation demonstrates that the current modular structure is sufficient for its requirements.
 
 Premature abstraction would increase complexity without providing meaningful benefits.
 
@@ -246,37 +246,35 @@ When one analyzer calculates information that another analyzer requires, the exi
 
 For example, the Findings Analyzer returns both human-readable insights and structured data:
 
-```json
-{
-    "insights": [],
-    "data": {
-        "data_completeness": 86.39,
-        "duplicate_rows": 483,
-        "highest_missing": {
-            "column": "Rating",
-            "percentage": 13.6
-        },
-        "numeric_columns_percentage": {
-            "count": 3,
-            "total": 12,
-            "percentage": 25
+    {
+        "insights": [],
+        "data": {
+            "data_completeness": 86.39,
+            "duplicate_rows": 483,
+            "highest_missing": {
+                "column": "Rating",
+                "percentage": 13.6
+            },
+            "numeric_columns_percentage": {
+                "count": 3,
+                "total": 12,
+                "percentage": 25
+            }
         }
     }
-}
-```
 
-The Recommendation Analyzer can consume this structured data instead of independently recalculating values such as the highest missing-value column or dataset completeness.
+The Recommendation Analyzer can consume structured analysis results instead of independently recalculating information already produced by the analysis pipeline.
 
 ## Rationale
 
 Reusing calculated results:
 
-* Avoids duplicated logic
-* Keeps calculations centralized
-* Reduces the possibility of inconsistent results
-* Makes dependencies between analyzers explicit
+- Avoids duplicated logic
+- Keeps calculations centralized
+- Reduces the possibility of inconsistent results
+- Makes dependencies between analyzers explicit
 
-This is particularly useful as the number of analyzers grows.
+This becomes increasingly useful as the number of analyzers grows.
 
 ---
 
@@ -294,19 +292,17 @@ Findings and recommendations are treated as separate stages of analysis.
 
 For example:
 
-```text
-Finding:
-Rating column has the highest missing-value rate at 13.6%.
+    Finding:
+    Rating column has the highest missing-value rate at 13.6%.
 
-Recommendation:
-Review the missing values across the dataset, particularly in the Rating column.
-```
+    Recommendation:
+    Review the missing values across the dataset, particularly in the Rating column.
 
 ## Rationale
 
 Separating these responsibilities keeps the analysis easier to understand and allows the recommendation system to become more sophisticated independently of the underlying findings.
 
-Future recommendations may consider additional context without changing how basic findings are calculated.
+Future recommendations can use additional context without changing how basic findings are calculated.
 
 ---
 
@@ -318,27 +314,27 @@ Future recommendations may consider additional context without changing how basi
 
 The Visualization Analyzer determines what type of visualization may be appropriate for a column.
 
-It does not generate or render the actual charts.
+It provides visualization metadata to the frontend rather than generating the actual charts inside the analysis engine.
 
 Current decisions include:
 
-```text
-Numeric column
-    → Histogram
+    Numeric column
+        → Histogram
 
-Low-cardinality non-numeric column
-    → Bar chart
+    Low-cardinality non-numeric column
+        → Bar chart
 
-High-cardinality non-numeric column
-    → High-cardinality indicator
+    High-cardinality non-numeric column
+        → High-cardinality indicator
 
-Numeric identifier column
-    → Identifier
-```
+    Numeric identifier column
+        → Identifier
+
+The frontend uses this metadata when presenting visualization-related results to the user.
 
 ## Rationale
 
-The analyzer should determine **what visualization makes sense**, while the frontend should determine **how that visualization is rendered**.
+The analyzer should determine **what visualization makes sense**, while the frontend determines **how that visualization is presented**.
 
 This keeps data-analysis logic separate from presentation logic.
 
@@ -354,13 +350,11 @@ It also allows the frontend visualization implementation to change without requi
 
 The initial Visualization Analyzer uses column-name patterns to identify likely identifier columns.
 
-For example:
+Examples include:
 
-```text
-id
-parent_id
-user_id
-```
+    id
+    parent_id
+    user_id
 
 Column names are inspected for identifier-like tokens such as `id`.
 
@@ -370,14 +364,12 @@ Identifier columns generally should not be treated like ordinary numeric variabl
 
 For example, a column containing:
 
-```text
-1
-2
-3
-4
-5
-...
-```
+    1
+    2
+    3
+    4
+    5
+    ...
 
 may technically be numeric but does not necessarily represent a measurable quantity for which a histogram would provide meaningful insight.
 
@@ -389,35 +381,36 @@ Column-name detection is not a complete semantic data-type detection system.
 
 A future version may use additional information such as:
 
-* Uniqueness ratio
-* Cardinality
-* Value distribution
-* Data patterns
-* Column semantics
+- Uniqueness ratio
+- Cardinality
+- Value distribution
+- Data patterns
+- Column semantics
 
 These improvements are intentionally deferred.
 
 ---
 
-# ADR-013: Use Existing Overview Data Types
+# ADR-013: Reuse Existing Structural Dataset Information
 
 **Status:** Accepted
 
 ## Decision
 
-The Visualization Analyzer uses the data types already calculated by the Overview Analyzer instead of independently determining the basic Pandas data type of every column.
+Analyzers should reuse structural information that has already been calculated by the analysis pipeline instead of independently duplicating the same basic detection logic.
+
+For example, the Overview Analyzer provides basic column data types that can be used by visualization analysis.
 
 ## Rationale
 
-The Overview Analyzer already provides a centralized representation of column data types.
+Reusing existing structural information:
 
-Reusing this information:
+- Avoids duplicated type-detection logic
+- Keeps analyzer responsibilities clear
+- Establishes a consistent source for basic dataset information
+- Allows specialized analyzers to focus on their own responsibilities
 
-* Avoids duplicated type-detection logic
-* Keeps analyzer responsibilities clear
-* Makes the Overview Analyzer the source of basic structural dataset information
-
-The Visualization Analyzer can then focus on visualization-specific decisions.
+The Overview Analyzer focuses on structural information, while the Visualization Analyzer focuses on visualization-specific decisions.
 
 ---
 
@@ -429,13 +422,9 @@ The Visualization Analyzer can then focus on visualization-specific decisions.
 
 Dataset completeness is defined as the percentage of rows that contain **no missing values in any column**.
 
-The calculation is based on Pandas missing-value (`NaN`) detection.
-
 For example, if a dataset contains 100 rows and 10 rows contain at least one missing value:
 
-```text
-Dataset completeness = 90%
-```
+    Dataset completeness = 90%
 
 ## Rationale
 
@@ -447,7 +436,9 @@ The metric also provides useful context for the Findings and Recommendation anal
 
 The frontend should explain this definition to users when displaying dataset completeness.
 
-This is important because completeness does not mean that every individual column is 100% complete. It represents the percentage of rows that contain no missing values anywhere in the dataset.
+Completeness does not mean that every individual column is 100% complete.
+
+It represents the percentage of rows that contain no missing values anywhere in the dataset.
 
 ---
 
@@ -457,13 +448,13 @@ This is important because completeness does not mean that every individual colum
 
 ## Decision
 
-The MVP focuses on detecting and reporting data-quality issues rather than automatically cleaning the dataset.
+The completed MVP focuses on detecting and reporting data-quality issues rather than automatically cleaning the dataset.
 
 The current system identifies issues such as:
 
-* Missing values
-* Duplicate rows
-* Dataset completeness
+- Missing values
+- Duplicate rows
+- Dataset completeness
 
 Recommendations can suggest actions, but the system does not automatically modify the user's dataset.
 
@@ -473,12 +464,12 @@ Automatic cleaning introduces additional decisions and risks.
 
 For example, a missing value could potentially be handled by:
 
-* Removing the row
-* Removing the column
-* Filling with the mean
-* Filling with the median
-* Filling with the mode
-* Using domain-specific logic
+- Removing the row
+- Removing the column
+- Filling with the mean
+- Filling with the median
+- Filling with the mode
+- Using domain-specific logic
 
 The correct choice depends on the dataset and intended use.
 
@@ -494,11 +485,11 @@ Therefore, the MVP focuses on transparency and recommendations rather than autom
 
 Detection of values such as:
 
-* Placeholder strings
-* Blank strings
-* `-`
-* `(X)`
-* Other dataset-specific filler values
+- Placeholder strings
+- Blank strings
+- `-`
+- `(X)`
+- Other dataset-specific filler values
 
 is intentionally outside the current MVP scope.
 
@@ -524,23 +515,200 @@ Findings are returned as human-readable statements rather than exposing only raw
 
 For example:
 
-```text
-The dataset has moderate completeness, with 86.39% of rows containing no missing values.
+    The dataset has moderate completeness, with 86.39% of rows containing no missing values.
 
-483 duplicate rows were detected.
+    483 duplicate rows were detected.
 
-Rating column has the highest missing-value rate at 13.6%.
+    Rating column has the highest missing-value rate at 13.6%.
 
-3 of 12 columns are numeric (25.0%).
-```
+    3 of 12 columns are numeric (25.0%).
 
-The analyzer also returns structured data internally for reuse by other analyzers.
+The analyzer also returns structured data for reuse by other parts of the analysis pipeline.
 
 ## Rationale
 
 Raw metrics are useful for applications, but users should not have to interpret every number themselves.
 
-Human-readable findings make the output more understandable while the structured data preserves machine-readable information for downstream processing.
+Human-readable findings make the output more understandable while structured data preserves machine-readable information for downstream processing.
+
+---
+
+# ADR-018: Containerized Deployment
+
+**Status:** Accepted
+
+## Decision
+
+The Data Detective application is packaged as a Docker container.
+
+The same containerized application is used for local testing and cloud deployment.
+
+The completed AWS deployment uses:
+
+    Docker
+       │
+       ▼
+    Amazon ECR
+       │
+       ▼
+    Amazon ECS
+       │
+       ▼
+    AWS Fargate
+
+The container packages the FastAPI backend, frontend, and required Python dependencies into a single deployable image.
+
+## Rationale
+
+Containerization provides a consistent application environment between development and deployment.
+
+It simplifies deployment by packaging the application and its dependencies into a single image.
+
+Using the same image for local testing and AWS deployment reduces environment-specific differences and makes the deployment process reproducible.
+
+---
+
+# ADR-019: AWS ECS with Fargate for MVP Deployment
+
+**Status:** Accepted
+
+## Decision
+
+The completed MVP is deployed on AWS using Amazon ECS with AWS Fargate.
+
+The application runs as a Fargate task using the Docker image stored in Amazon ECR.
+
+The deployment uses:
+
+- Amazon ECR for container image storage
+- Amazon ECS for container orchestration
+- AWS Fargate for container execution
+- AWS IAM for required execution permissions
+
+The current deployment uses a public IP for direct access to the running application rather than introducing a load balancer.
+
+## Rationale
+
+ECS with Fargate provides a practical way to demonstrate the containerized MVP on AWS without managing virtual machines.
+
+It also demonstrates familiarity with:
+
+- Containerized application deployment
+- Amazon ECR
+- ECS task definitions
+- Fargate
+- IAM execution roles
+- AWS networking
+
+The architecture intentionally avoids additional infrastructure that is not required by the current MVP.
+
+## Alternatives Considered
+
+### Amazon EC2
+
+Running the application directly on an EC2 instance would introduce server management responsibilities that are unnecessary for the current MVP.
+
+### Application Load Balancer
+
+An Application Load Balancer could provide a stable HTTP endpoint and additional routing capabilities, but it was not required for the current demonstration deployment.
+
+The current architecture therefore uses direct access to the Fargate task.
+
+---
+
+# ADR-020: Keep the AWS Demonstration Environment Minimal
+
+**Status:** Accepted
+
+## Decision
+
+The AWS deployment intentionally uses only the infrastructure required to demonstrate the completed Data Detective MVP.
+
+The current deployment does not introduce services such as:
+
+- Amazon S3
+- Amazon OpenSearch Service
+- Amazon ElastiCache/Redis
+- Amazon SNS
+- Amazon SQS
+- Application Load Balancer
+- Database services
+
+unless a future feature creates a concrete requirement for them.
+
+The Fargate service is kept stopped when the live deployment is not required for testing or demonstration.
+
+## Rationale
+
+The project should demonstrate appropriate architectural decision-making rather than adding cloud services simply because they are available or suggested as possible technologies.
+
+Keeping the infrastructure minimal:
+
+- Reduces unnecessary complexity
+- Reduces unnecessary resource usage
+- Keeps the MVP architecture understandable
+- Makes the deployment easier to maintain
+- Keeps infrastructure proportional to the project's current requirements
+
+Future services can be introduced when they solve an actual application problem.
+
+---
+
+# ADR-021: No Automatic Data Persistence in the MVP
+
+**Status:** Accepted
+
+## Decision
+
+The MVP processes uploaded CSV datasets for analysis without introducing a persistent dataset-storage layer.
+
+The analysis is performed during the request and the resulting structured response is returned to the client.
+
+Persistent storage is not required for the current analysis workflow.
+
+## Rationale
+
+The MVP does not currently require users to create accounts, save previous analyses, or maintain a dataset history.
+
+Adding a database or object-storage layer at this stage would introduce additional infrastructure without solving a current requirement.
+
+Persistent dataset management can be considered later if features such as saved analyses, user accounts, or dataset history are introduced.
+
+---
+
+# ADR-022: Deployment Documentation Reflects Verified Infrastructure
+
+**Status:** Accepted
+
+## Decision
+
+Deployment documentation records infrastructure that has actually been implemented and verified rather than documenting AWS services merely as future possibilities.
+
+The current verified deployment path is:
+
+    Docker
+       │
+       ▼
+    Amazon ECR
+       │
+       ▼
+    Amazon ECS
+       │
+       ▼
+    AWS Fargate
+       │
+       ▼
+    Data Detective
+
+The live deployment was tested through the application's web interface and FastAPI documentation endpoints.
+
+## Rationale
+
+Documentation should represent the actual architecture of the project.
+
+This prevents the project from appearing to use cloud services that were never implemented and makes the architecture easier to explain during demonstrations and interviews.
+
+Future infrastructure should be documented as a proposed decision only after it becomes an actual project requirement or implementation.
 
 ---
 
@@ -556,7 +724,10 @@ Future architectural decisions should follow these principles:
 6. Separate analysis from presentation.
 7. Design for maintainability before optimization.
 8. Prefer incremental improvements over premature complexity.
-9. Document significant architectural decisions as they are made.
+9. Keep infrastructure proportional to actual requirements.
+10. Document significant architectural decisions as they are made.
+11. Distinguish implemented architecture from future possibilities.
+12. Prefer verified implementation over theoretical infrastructure.
 
 ---
 
@@ -567,3 +738,5 @@ This document is expected to evolve throughout the lifetime of the project.
 Whenever a significant architectural decision is made, a new ADR should be added rather than silently changing the reasoning behind an existing decision.
 
 This preserves the reasoning behind the project's evolution and provides a historical record of why the architecture looks the way it does.
+
+Future deployment decisions, including additional hosting platforms such as Render, should be documented after they have been implemented and verified.

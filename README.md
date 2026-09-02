@@ -1,50 +1,86 @@
 # 🕵️ Data Detective
 
-> **Understand. Discover. Decide.**
+> **Understand and Discover your data**
 
 Data Detective is a full-stack data understanding application that helps users quickly explore unfamiliar datasets through automated analysis, meaningful findings, recommendations, and visualization suggestions.
 
-Instead of manually inspecting rows and columns, users can upload a dataset and receive a structured analysis that highlights its structure, data quality, potential issues, and useful directions for further exploration.
+Instead of manually inspecting rows and columns, users can upload a CSV dataset and receive a structured analysis that highlights its structure, data quality, potential issues, and useful directions for further exploration.
 
 The goal is not to replace a data analyst, but to reduce the time and effort required to understand a new dataset.
 
 ---
 
+## 📸 Screenshots
+
+### Dashboard
+
+![Data Detective Dashboard](docs/images/dashboard.png)
+
+### Dataset Upload & Analysis
+
+![Data Detective Upload](docs/images/upload.png)
+
+### Overview Results
+
+![Data Detective Analysis](docs/images/overview.png)
+
+### Findings & Recommendations
+
+![Data Detective Findings](docs/images/findings.png)
+
+### Visualizations
+
+![Data Detective Visualizations](docs/images/visualizations.png)
+
+---
+
 ## ✨ Features
 
-### Current
+### Dataset Analysis
 
-* ✅ FastAPI backend
-* ✅ Vanilla JavaScript frontend foundation
-* ✅ API-first architecture
-* ✅ Interactive API documentation with Swagger & ReDoc
-* ✅ Modular analysis engine
-* ✅ Overview analysis
-* ✅ Data quality analysis
-* ✅ Automated findings
-* ✅ Data-driven recommendations
-* ✅ Visualization suggestions
-* ✅ Structured JSON analysis response
-* ✅ Clean separation between frontend and backend
-* ✅ Project architecture and design documentation
+- ✅ CSV dataset upload
+- ✅ Dataset overview
+- ✅ Row and column information
+- ✅ Column names and data types
+- ✅ Missing-value analysis
+- ✅ Duplicate-row detection
+- ✅ Dataset completeness calculation
+- ✅ Memory usage analysis
+- ✅ Automated findings
+- ✅ Data-driven recommendations
+- ✅ Visualization suggestions
 
-### In Progress
+### Frontend
 
-* 🚧 Dataset upload interface
-* 🚧 Frontend dashboard
-* 🚧 Rendering analysis results
-* 🚧 Interactive visualization rendering
-* 🚧 Frontend error handling
-* 🚧 Responsive UI
+- ✅ Dataset upload interface
+- ✅ Frontend/backend API integration
+- ✅ Analysis dashboard
+- ✅ Structured result presentation
+- ✅ Findings display
+- ✅ Recommendations display
+- ✅ Visualization rendering
+- ✅ Error handling
+- ✅ Responsive interface
 
-### Future
+### Backend
 
-* Exportable analysis reports
-* Advanced data-quality detection
-* Additional visualizations
-* AI-assisted insights
-* Natural-language dataset explanations
-* Conversational dataset exploration
+- ✅ FastAPI REST API
+- ✅ Modular analysis engine
+- ✅ Separate analyzers
+- ✅ Structured JSON response
+- ✅ Swagger API documentation
+- ✅ ReDoc API documentation
+- ✅ Health-check endpoint
+
+### Deployment
+
+- ✅ Docker containerization
+- ✅ Local Docker testing
+- ✅ Amazon ECR image repository
+- ✅ Amazon ECS cluster
+- ✅ AWS Fargate deployment
+- ✅ Live AWS deployment verification
+- 🚧 Render deployment — next deployment target
 
 ---
 
@@ -52,31 +88,29 @@ The goal is not to replace a data analyst, but to reduce the time and effort req
 
 A dataset is processed through a modular analysis pipeline:
 
-```text
-CSV Dataset
-     │
-     ▼
-Pandas DataFrame
-     │
-     ▼
-Analysis Engine
-     │
-     ├── Overview Analyzer
-     ├── Quality Analyzer
-     ├── Findings Analyzer
-     ├── Recommendation Analyzer
-     └── Visualization Analyzer
-     │
-     ▼
-Structured JSON
-     │
-     ▼
-Frontend Dashboard
-```
+    CSV Dataset
+         │
+         ▼
+    Pandas DataFrame
+         │
+         ▼
+    Analysis Engine
+         │
+         ├── Overview Analyzer
+         ├── Quality Analyzer
+         ├── Findings Analyzer
+         ├── Recommendation Analyzer
+         └── Visualization Analyzer
+         │
+         ▼
+    Structured JSON
+         │
+         ▼
+    Frontend Dashboard
 
 Each analyzer focuses on a specific aspect of understanding the dataset.
 
-This modular design allows new analysis capabilities to be added without redesigning the entire system.
+The modular design allows new analysis capabilities to be added without redesigning the entire system.
 
 ---
 
@@ -84,95 +118,110 @@ This modular design allows new analysis capabilities to be added without redesig
 
 ### Overview
 
-Provides basic information about the dataset:
+Provides basic information about the uploaded dataset:
 
-* Filename
-* Number of rows
-* Number of columns
-* Column names
-* Basic data types
+- Filename
+- Number of rows
+- Number of columns
+- Column names
+- Basic data types
 
 ### Data Quality
 
-Evaluates basic dataset quality:
+Evaluates fundamental dataset quality characteristics:
 
-* Missing values
-* Missing-value percentages
-* Duplicate rows
-* Dataset memory usage
-* Dataset completeness
+- Missing values
+- Missing-value percentages
+- Duplicate rows
+- Dataset memory usage
+- Dataset completeness
 
 ### Findings
 
-Converts analysis results into human-readable observations such as:
+Converts analysis results into human-readable observations.
 
-* Dataset completeness
-* Duplicate-row detection
-* Highest missing-value rate
-* Numeric-column distribution
+Examples include:
 
-Findings also expose structured data that can be reused by other parts of the analysis pipeline.
+- Dataset completeness
+- Duplicate-row detection
+- Highest missing-value rate
+- Numeric-column distribution
+
+Findings also expose structured information that can be reused by other parts of the analysis pipeline.
 
 ### Recommendations
 
-Generates actionable suggestions based on detected issues.
+Generates actionable suggestions based on detected dataset issues.
 
 For example:
 
-```text
-Review the 1477 missing values across the dataset,
-particularly in the Rating column.
+    Review the 1477 missing values across the dataset,
+    particularly in the Rating column.
 
-Review the 483 duplicated rows and remove them
-if they represent repeated records.
-```
+    Review the 483 duplicated rows and remove them
+    if they represent repeated records.
 
 The recommendation system currently informs the user rather than automatically modifying the dataset.
 
 ### Visualizations
 
-The Visualization Analyzer determines what type of visualization may be appropriate for individual columns.
+The Visualization Analyzer determines suitable visualization types based on column characteristics.
 
 Current classifications include:
 
-* Histograms for numeric columns
-* Bar charts for low-cardinality non-numeric columns
-* High-cardinality columns
-* Identifier columns
+- Histograms for numeric columns
+- Bar charts for low-cardinality non-numeric columns
+- High-cardinality columns
+- Identifier columns
 
-The backend currently provides visualization metadata. Actual chart rendering will be handled by the frontend.
+The frontend uses the visualization metadata generated by the backend to render appropriate charts.
 
 ---
 
-## 🏗️ Project Architecture
+## 🏗️ Architecture
 
-```text
-                    Browser
-                       │
-                       ▼
-              HTML • CSS • JavaScript
-                       │
-                       ▼
-                FastAPI Backend
-                       │
-                       ▼
-                Analysis Engine
-                       │
-          ┌────────────┼────────────┐
-          │            │            │
-          ▼            ▼            ▼
-      Overview      Quality      Findings
-                                   │
-                          ┌────────┴────────┐
-                          ▼                 ▼
-                  Recommendations    Visualizations
-                          │                 │
-                          └────────┬────────┘
-                                   ▼
-                            Structured JSON
-```
+Data Detective follows an API-first architecture with a clear separation between the frontend, API layer, analysis engine, and individual analyzers.
 
-Data Detective follows an **API-first architecture** with a clear separation between the frontend, API layer, analysis engine, and individual analyzers.
+    ┌──────────────────────┐
+    │       Browser        │
+    │                      │
+    │ HTML / CSS / JS      │
+    └──────────┬───────────┘
+               │
+               │ HTTP
+               ▼
+    ┌──────────────────────┐
+    │    FastAPI Backend   │
+    │                      │
+    │ API Routes           │
+    └──────────┬───────────┘
+               │
+               ▼
+    ┌──────────────────────┐
+    │   Analysis Engine    │
+    └──────────┬───────────┘
+               │
+       ┌───────┼────────┐
+       │       │        │
+       ▼       ▼        ▼
+    Overview Quality Findings
+                         │
+                    ┌────┴────┐
+                    ▼         ▼
+             Recommendations Visualizations
+                    │         │
+                    └────┬────┘
+                         ▼
+                 Structured JSON
+                         │
+                         ▼
+                 Frontend Dashboard
+
+The frontend communicates with the backend through REST API endpoints.
+
+The analysis engine orchestrates the individual analyzers and combines their results into a single structured response.
+
+For a detailed architecture explanation, see [`docs/architecture.md`](docs/architecture.md).
 
 ---
 
@@ -180,64 +229,75 @@ Data Detective follows an **API-first architecture** with a clear separation bet
 
 ### Backend
 
-* Python
-* FastAPI
-* Uvicorn
-* Pandas
+- Python
+- FastAPI
+- Uvicorn
+- Pandas
+- Pydantic
 
 ### Frontend
 
-* HTML5
-* CSS3
-* Vanilla JavaScript
+- HTML5
+- CSS3
+- Vanilla JavaScript
+
+### Containerization & Deployment
+
+- Docker
+- Amazon ECR
+- Amazon ECS
+- AWS Fargate
+- Render — planned deployment target
 
 ### Development
 
-* Git
-* GitHub
-* Swagger UI
-* ReDoc
+- Git
+- GitHub
+- Swagger UI
+- ReDoc
 
 ---
 
 ## 📂 Project Structure
 
-```text
-data-detective/
-
-├── backend/
-│   ├── app/
-│   │   ├── api/
-│   │   ├── analyzers/
-│   │   ├── config/
-│   │   ├── engine/
-│   │   ├── schemas/
-│   │   └── utils/
-│   │
-│   └── requirements.txt
-│
-├── frontend/
-│   ├── assets/
-│   ├── css/
-│   ├── js/
-│   ├── components/
-│   └── index.html
-│
-├── datasets/
-│   └── sample/
-│
-├── docs/
-│   ├── api.md
-│   ├── architecture.md
-│   ├── decisions.md
-│   └── roadmap.md
-│
-├── tests/
-│   ├── backend/
-│   └── frontend/
-│
-└── README.md
-```
+    data-detective/
+    │
+    ├── backend/
+    │   ├── app/
+    │   │   ├── api/
+    │   │   ├── analyzers/
+    │   │   ├── config/
+    │   │   ├── engine/
+    │   │   ├── schemas/
+    │   │   └── utils/
+    │   │
+    │   └── requirements.txt
+    │
+    ├── frontend/
+    │   ├── assets/
+    │   ├── css/
+    │   ├── js/
+    │   ├── components/
+    │   └── index.html
+    │
+    ├── datasets/
+    │   └── sample/
+    │
+    ├── docs/
+    │   ├── api.md
+    │   ├── architecture.md
+    │   ├── decisions.md
+    │   ├── roadmap.md
+    │   └── images/
+    │
+    ├── tests/
+    │   ├── backend/
+    │   └── frontend/
+    │
+    ├── .dockerignore
+    ├── .gitignore
+    ├── Dockerfile
+    └── README.md
 
 ### Folder Responsibilities
 
@@ -259,51 +319,56 @@ data-detective/
 
 ## 🚀 Getting Started
 
-### Clone the repository
+### Clone the Repository
 
-```bash
-git clone git@github.com:TheRookiexe/Data-Detective.git
+    git clone git@github.com:TheRookiexe/Data-Detective.git
+    cd Data-Detective
 
-cd Data-Detective
-```
+### Create a Virtual Environment
 
-### Create a virtual environment
+    python3 -m venv .venv
 
-```bash
-python3 -m venv .venv
-```
-
-### Activate the virtual environment
+### Activate the Virtual Environment
 
 #### Linux / macOS
 
-```bash
-source .venv/bin/activate
-```
+    source .venv/bin/activate
 
 #### Windows
 
-```powershell
-.venv\Scripts\activate
-```
+    .venv\Scripts\activate
 
-### Install dependencies
+### Install Dependencies
 
-```bash
-pip install -r backend/requirements.txt
-```
+    pip install -r backend/requirements.txt
 
-### Start the development server
+### Start the Development Server
 
-```bash
-uvicorn backend.app.main:app --reload
-```
+    uvicorn backend.app.main:app --reload
 
 The application will be available at:
 
-```text
-http://127.0.0.1:8000
-```
+    http://127.0.0.1:8000
+
+---
+
+## 🐳 Running with Docker
+
+Data Detective can also be run as a Docker container.
+
+### Build the Image
+
+    docker build -t data-detective .
+
+### Run the Container
+
+    docker run --name data-detective -p 8000:8000 data-detective
+
+The application will then be available at:
+
+    http://localhost:8000
+
+Docker was used to package the application and provide a consistent deployment environment across local development and cloud infrastructure.
 
 ---
 
@@ -311,37 +376,33 @@ http://127.0.0.1:8000
 
 ### Health Check
 
-```http
-GET /api/health
-```
+    GET /api/health
+
+Returns the current health status of the application.
 
 ### Analyze Dataset
 
-```http
-POST /api/analyze
-```
+    POST /api/analyze
 
-The `/api/analyze` endpoint accepts a CSV file and runs the complete analysis pipeline.
+Accepts a CSV file and runs the complete Data Detective analysis pipeline.
 
-Interactive API documentation is available through FastAPI:
+The endpoint returns structured JSON containing:
+
+- Overview
+- Data quality
+- Findings
+- Recommendations
+- Visualization metadata
 
 ### Swagger UI
 
-```text
-http://127.0.0.1:8000/docs
-```
+    http://127.0.0.1:8000/docs
 
 ### ReDoc
 
-```text
-http://127.0.0.1:8000/redoc
-```
+    http://127.0.0.1:8000/redoc
 
-For detailed API documentation, see:
-
-```text
-docs/api.md
-```
+For detailed API documentation, see [`docs/api.md`](docs/api.md).
 
 ---
 
@@ -349,58 +410,144 @@ docs/api.md
 
 A successful analysis produces a structured response containing the results of all analyzers:
 
-```json
-{
-    "overview": {},
-    "quality": {},
-    "findings": {
-        "insights": [],
-        "data": {}
-    },
-    "recommendations": {
-        "suggestions": []
-    },
-    "visualizations": {
-        "numeric_columns": [],
-        "non_numeric_columns": [],
-        "vis": []
+    {
+        "overview": {},
+        "quality": {},
+        "findings": {
+            "insights": [],
+            "data": {}
+        },
+        "recommendations": {
+            "suggestions": []
+        },
+        "visualizations": {
+            "numeric_columns": [],
+            "non_numeric_columns": [],
+            "vis": []
+        }
     }
-}
-```
 
 The exact results depend on the uploaded dataset.
 
 ---
 
-## 📌 Current Progress
+## ☁️ Deployment
 
-### Backend Analysis Pipeline
+Data Detective has been containerized and deployed to AWS as part of the project's cloud deployment and verification process.
 
-* [x] Project planning
-* [x] Repository structure
-* [x] FastAPI setup
-* [x] API routing
-* [x] Health endpoint
-* [x] Analysis engine
-* [x] Overview Analyzer
-* [x] Quality Analyzer
-* [x] Findings Analyzer
-* [x] Recommendation Analyzer
-* [x] Visualization Analyzer
-* [x] Structured analysis response
-* [x] Backend documentation
+### Deployment Architecture
+
+    Docker Image
+         │
+         ▼
+    Amazon ECR
+         │
+         ▼
+    Amazon ECS
+         │
+         ▼
+    AWS Fargate
+         │
+         ▼
+    Running Data Detective Container
+
+### AWS Components
+
+- Amazon ECR — stores the Docker image
+- Amazon ECS — manages the container workload
+- AWS Fargate — runs the container without managing servers
+- IAM — provides the required deployment and task permissions
+
+The AWS deployment was successfully tested and the application was verified through its live endpoint and API documentation.
+
+The AWS demonstration environment is kept minimal and the Fargate service is stopped when it is not being used for testing or demonstration.
+
+> **Cost note:** AWS Fargate is usage-based. The demonstration service is therefore not intended to run continuously.
+
+---
+
+## 🚀 Render Deployment
+
+The next deployment step for Data Detective is **Render**.
+
+The existing Dockerized application is being prepared for deployment on Render so that the project can have an additional hosted environment beyond the AWS demonstration deployment.
+
+### Planned Render Deployment
+
+    GitHub Repository
+          │
+          ▼
+      Render
+          │
+          ▼
+    Docker Container
+          │
+          ▼
+    Data Detective
+          │
+          ▼
+    Public Web Application
+
+The Render deployment will be verified after deployment and this section will be updated with the live application URL.
+
+### Deployment Status
+
+- ✅ Application containerized with Docker
+- ✅ Docker image tested locally
+- ✅ AWS ECR deployment completed
+- ✅ AWS ECS/Fargate deployment completed and verified
+- 🚧 Render deployment — next step
+- ⏳ Render deployment verification
+- ⏳ Live Render URL
+
+---
+
+## 📌 Project Status
+
+### MVP Status: Complete
+
+The Data Detective MVP has been completed and verified across the main application stack.
+
+### Backend
+
+- [x] Project planning
+- [x] Repository structure
+- [x] FastAPI setup
+- [x] API routing
+- [x] Health endpoint
+- [x] Analysis engine
+- [x] Overview Analyzer
+- [x] Quality Analyzer
+- [x] Findings Analyzer
+- [x] Recommendation Analyzer
+- [x] Visualization Analyzer
+- [x] Structured analysis response
+- [x] Backend documentation
 
 ### Frontend
 
-* [x] Frontend structure
-* [x] Static frontend integration
-* [ ] Dataset upload interface
-* [ ] API integration
-* [ ] Dashboard
-* [ ] Findings display
-* [ ] Recommendations display
-* [ ] Visualization rendering
-* [ ] Responsive UI
+- [x] Frontend structure
+- [x] Dataset upload interface
+- [x] API integration
+- [x] Dashboard
+- [x] Analysis result presentation
+- [x] Findings display
+- [x] Recommendations display
+- [x] Visualization rendering
+- [x] Error handling
+- [x] Responsive UI
+
+### Integration & Deployment
+
+- [x] Frontend/backend integration
+- [x] End-to-end dataset analysis flow
+- [x] Docker containerization
+- [x] Local Docker testing
+- [x] Amazon ECR setup
+- [x] Amazon ECS setup
+- [x] AWS Fargate deployment
+- [x] Live AWS verification
+- [ ] Render deployment
 
 ---
 
@@ -408,69 +555,106 @@ The exact results depend on the uploaded dataset.
 
 ### Phase 1 — Foundation
 
-Completed.
+**Completed**
+
+- Project structure
+- Development environment
+- Initial architecture
+- API foundation
 
 ### Phase 2 — Backend Analysis MVP
 
-Completed.
+**Completed**
 
-The modular analysis pipeline is now capable of processing datasets and generating structured analysis results.
+- Modular analysis engine
+- Dataset overview
+- Data quality analysis
+- Findings
+- Recommendations
+- Visualization metadata
+- Structured API response
 
 ### Phase 3 — Frontend MVP
 
-Current focus.
+**Completed**
 
-* Dataset upload
-* API integration
-* Dashboard
-* Analysis result presentation
-* Visualization rendering
-* Error handling
-* Responsive UI
+- Dataset upload
+- API integration
+- Dashboard
+- Analysis result presentation
+- Findings
+- Recommendations
+- Visualization rendering
+- Error handling
+- Responsive UI
 
-### Phase 4 — Improvements
+### Phase 4 — MVP Integration & Verification
 
-* Additional visualizations
-* Advanced data-quality detection
-* Better filtering
-* Report export
-* Accessibility improvements
-* UI polish
+**Completed**
 
-### Phase 5 — Advanced Features
+- End-to-end frontend/backend integration
+- Local testing
+- Docker testing
+- Application verification
 
-* AI-generated insights
-* Natural-language explanations
-* Conversational dataset exploration
-* User accounts
-* Saved analyses
-* Background processing
-* Database support
+### Phase 5 — Containerization & AWS Deployment
 
-For the detailed roadmap, see:
+**Completed**
 
-```text
-docs/roadmap.md
-```
+- Docker image
+- Amazon ECR
+- Amazon ECS
+- AWS Fargate
+- IAM configuration
+- Live deployment verification
+
+### Phase 6 — Additional Deployment & Hosting
+
+**Current**
+
+- Render deployment
+- Render deployment verification
+- Public hosted application
+
+### Phase 7 — Improvements
+
+- Additional visualizations
+- Advanced data-quality detection
+- Better filtering
+- Report export
+- Accessibility improvements
+- UI polish
+
+### Phase 8 — Advanced Features
+
+- AI-generated insights
+- Natural-language dataset explanations
+- Conversational dataset exploration
+- User accounts
+- Saved analyses
+- Background processing
+- Database support
+
+For the detailed roadmap, see [`docs/roadmap.md`](docs/roadmap.md).
 
 ---
 
 ## 📚 Documentation
 
-Detailed project documentation is available in the `docs/` directory.
+Detailed project documentation is available in the [`docs/`](docs/) directory.
 
 | Document | Description |
 | --- | --- |
-| `architecture.md` | System architecture and component responsibilities |
-| `decisions.md` | Important architectural and design decisions |
-| `roadmap.md` | Project milestones and future development |
-| `api.md` | REST API documentation |
+| [`architecture.md`](docs/architecture.md) | System architecture and component responsibilities |
+| [`decisions.md`](docs/decisions.md) | Important architectural and design decisions |
+| [`roadmap.md`](docs/roadmap.md) | Project milestones and future development |
+| [`api.md`](docs/api.md) | REST API documentation |
 
 ---
 
 ## 🤝 Contributing
 
-Data Detective is currently under active development.
+Data Detective is currently being developed incrementally.
 
 Suggestions, discussions, and improvements are welcome.
 
@@ -498,4 +682,6 @@ Data Detective is built around one simple idea:
 
 Rather than overwhelming users with dozens of charts and statistics, the application focuses on presenting useful information in a clear, structured, and approachable way.
 
-The project is intentionally being developed incrementally, with a simple modular architecture that can grow as new requirements emerge.
+The project is intentionally built with a simple modular architecture that can grow as new requirements emerge.
+
+The current MVP focuses on understanding datasets first, while leaving more advanced capabilities such as AI-assisted insights, conversational exploration, and persistent analysis for future iterations.

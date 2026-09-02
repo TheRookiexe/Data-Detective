@@ -2,13 +2,17 @@
 
 This document describes the REST API exposed by the Data Detective backend.
 
-The application follows an **API-first architecture**, where backend functionality is exposed through HTTP endpoints under the `/api` namespace.
+Data Detective follows an **API-first architecture**, where backend functionality is exposed through HTTP endpoints under the `/api` namespace.
+
+The API provides a simple interface between the frontend and the modular analysis engine.
 
 ---
 
 # Base URL
 
-During development:
+## Local Development
+
+When running the backend locally:
 
 ```text
 http://127.0.0.1:8000
@@ -20,54 +24,85 @@ API namespace:
 http://127.0.0.1:8000/api
 ```
 
+## AWS Deployment
+
+The application can also be run as a Docker container on **AWS ECS with AWS Fargate**.
+
+The deployed base URL depends on the public IP assigned to the running Fargate task:
+
+```text
+http://<PUBLIC_IP>:8000
+```
+
+API namespace:
+
+```text
+http://<PUBLIC_IP>:8000/api
+```
+
+The public IP can change when the Fargate task is stopped and started again.
+
 ---
 
 # API Design Principles
 
 The API follows these principles:
 
-* REST-style endpoints
-* JSON responses
-* Stateless communication
-* Clear separation between frontend and backend
-* Thin API layer
-* Modular analysis through the analysis engine
-* Consistent structured responses
+- REST-style endpoints
+- JSON responses
+- Stateless communication
+- Clear separation between frontend and backend
+- Thin API layer
+- Modular analysis through the analysis engine
+- Consistent structured responses
+- Single analysis entry point for dataset processing
+
+The API layer is intentionally kept lightweight. It handles the HTTP request and passes the dataset to the analysis engine rather than containing the analysis logic itself.
 
 ---
 
 # Endpoints
 
-## Health Check
+The current API exposes two endpoints:
 
-### Request
+```text
+GET  /api/health
+POST /api/analyze
+```
+
+---
+
+# Health Check
+
+## Request
 
 ```http
 GET /api/health
 ```
 
-### Description
+## Description
 
 Returns the current health status of the backend service.
 
 This endpoint is useful for:
 
-* Verifying that the server is running
-* Development testing
-* Frontend health checks
-* Future deployment health checks
+- Verifying that the backend is running
+- Development testing
+- Checking a deployed application
+- Frontend health checks
+- Basic deployment verification
 
 ---
 
-### Response
+## Response
 
-**Status Code**
+### Status Code
 
 ```text
 200 OK
 ```
 
-**Response Body**
+### Response Body
 
 ```json
 {
@@ -80,33 +115,33 @@ This endpoint is useful for:
 
 # Analyze Dataset
 
-### Request
+## Request
 
 ```http
 POST /api/analyze
 ```
 
-### Description
+## Description
 
-Accepts a CSV dataset, loads it into a Pandas DataFrame, runs the analysis pipeline, and returns a structured analysis response.
+Accepts a CSV dataset, loads it into a Pandas DataFrame, runs the Data Detective analysis pipeline, and returns a structured JSON response.
 
-The endpoint acts as the primary entry point for dataset analysis.
+This is the primary application endpoint.
+
+The endpoint itself does not perform the individual analysis operations. Instead, it passes the loaded DataFrame to the analysis engine, which coordinates the modular analyzers.
 
 ---
 
-## Request
+# Request Format
 
 The endpoint accepts the dataset as a multipart form-data file.
-
-Example:
 
 ```text
 Content-Type: multipart/form-data
 ```
 
-The uploaded file is provided through the `file` field.
+The uploaded dataset must be provided through the `file` field.
 
-### Example using cURL
+## Example using cURL
 
 ```bash
 curl -X POST "http://127.0.0.1:8000/api/analyze" \
@@ -115,38 +150,42 @@ curl -X POST "http://127.0.0.1:8000/api/analyze" \
      -F "file=@dataset.csv"
 ```
 
+For a deployed instance, replace the local base URL with the public address of the running application.
+
 ---
 
 # Analysis Pipeline
 
-The `/api/analyze` endpoint passes the dataset through the analysis engine.
+The `/api/analyze` endpoint follows this workflow:
 
 ```text
 Uploaded CSV
-      │
-      ▼
+     │
+     ▼
 Pandas DataFrame
-      │
-      ▼
+     │
+     ▼
 Analysis Engine
-      │
-      ├── Overview Analyzer
-      ├── Quality Analyzer
-      ├── Findings Analyzer
-      ├── Recommendation Analyzer
-      └── Visualization Analyzer
-      │
-      ▼
+     │
+     ├── Overview Analyzer
+     ├── Quality Analyzer
+     ├── Findings Analyzer
+     ├── Recommendation Analyzer
+     └── Visualization Analyzer
+     │
+     ▼
 Combined JSON Response
 ```
 
-The analysis engine is responsible for coordinating the individual analyzers and combining their results.
+The analysis engine is responsible for coordinating the individual analyzers and combining their results into a single response.
+
+This structure allows individual analyzers to evolve independently without requiring major changes to the API layer.
 
 ---
 
 # Response Structure
 
-A successful analysis response is structured into five major sections:
+A successful analysis response contains five major sections:
 
 ```json
 {
@@ -158,15 +197,17 @@ A successful analysis response is structured into five major sections:
 }
 ```
 
-Each section represents one analyzer.
+Each section represents the output of a corresponding analyzer.
+
+The exact values depend on the uploaded dataset.
 
 ---
 
 # Overview
 
-The Overview Analyzer provides basic information about the dataset.
+The Overview Analyzer provides basic information about the uploaded dataset.
 
-### Example
+## Example
 
 ```json
 {
@@ -193,23 +234,23 @@ The Overview Analyzer provides basic information about the dataset.
 }
 ```
 
-### Current information
+## Current Information
 
 The Overview Analyzer provides:
 
-* Filename
-* Number of rows
-* Number of columns
-* Column names
-* Basic Pandas data types
+- Filename
+- Number of rows
+- Number of columns
+- Column names
+- Basic Pandas data types
 
 ---
 
 # Quality
 
-The Quality Analyzer evaluates basic dataset quality.
+The Quality Analyzer evaluates basic dataset quality characteristics.
 
-### Example
+## Example
 
 ```json
 {
@@ -228,17 +269,17 @@ The Quality Analyzer evaluates basic dataset quality.
 }
 ```
 
-### Current information
+## Current Information
 
 The Quality Analyzer provides:
 
-* Missing-value count per column
-* Missing-value percentage per column
-* Duplicate-row count
-* Dataset memory usage
-* Dataset completeness
+- Missing-value count per column
+- Missing-value percentage per column
+- Duplicate-row count
+- Dataset memory usage
+- Dataset completeness
 
-### Dataset Completeness
+## Dataset Completeness
 
 Dataset completeness represents the percentage of rows containing **no missing values**.
 
@@ -250,15 +291,15 @@ Dataset completeness: 86.39%
 
 means that 86.39% of the dataset's rows contain no missing values across their columns.
 
-The frontend should make this definition visible to users to maintain transparency about how the metric is calculated.
+This definition should be communicated clearly to users so that the metric is transparent.
 
 ---
 
 # Findings
 
-The Findings Analyzer converts analysis results into human-readable observations.
+The Findings Analyzer converts information from the analysis results into human-readable observations.
 
-### Example
+## Example
 
 ```json
 {
@@ -286,38 +327,40 @@ The Findings Analyzer converts analysis results into human-readable observations
 }
 ```
 
-The `insights` array is intended for user-facing information.
+The `insights` array contains human-readable observations intended for presentation to users.
 
-The `data` object contains structured values that can be reused by downstream analyzers and the frontend.
+The `data` object contains structured values used by the analysis pipeline and frontend.
 
-This avoids unnecessary recalculation of information that has already been determined by the analysis pipeline.
+Keeping these values structured allows downstream components to reuse information without unnecessarily recalculating it.
 
 ---
 
 # Recommendations
 
-The Recommendation Analyzer uses information from the Quality Analyzer and Findings Analyzer to provide actionable suggestions.
+The Recommendation Analyzer uses information from the dataset quality and findings analysis to provide actionable suggestions.
 
-### Example
+## Example
 
 ```json
 {
     "recommendations": {
         "suggestions": [
-            "Review the 1477 missing values across the dataset, particularly in the Rating column.",
-            "Review the 483 duplicated rows and remove them if they represent repeated records."
+            "Review the missing values across the dataset, particularly in the Rating column.",
+            "Review the duplicated rows and remove them if they represent repeated records."
         ]
     }
 }
 ```
 
+## Current Focus
+
 Recommendations currently focus on:
 
-* Missing values
-* Duplicate rows
-* Dataset completeness
+- Missing values
+- Duplicate rows
+- Dataset completeness
 
-The analyzer does not automatically modify or clean the dataset.
+The analyzer does **not** automatically modify or clean the dataset.
 
 Its purpose is to inform the user about potential actions they may want to take.
 
@@ -329,7 +372,7 @@ The Visualization Analyzer determines what type of visualization may be appropri
 
 It currently provides visualization metadata rather than rendering charts itself.
 
-### Example
+## Example
 
 ```json
 {
@@ -356,22 +399,24 @@ It currently provides visualization metadata rather than rendering charts itself
 }
 ```
 
-### Current visualization classifications
+## Current Visualization Classifications
 
 The analyzer can currently identify:
 
-* Histograms for numeric columns
-* Bar charts for low-cardinality non-numeric columns
-* High-cardinality columns
-* Identifier columns
+- Histograms for numeric columns
+- Bar charts for low-cardinality non-numeric columns
+- High-cardinality columns
+- Identifier columns
 
-The frontend is responsible for turning this metadata into actual visualizations.
+The Visualization Analyzer only determines the appropriate visualization metadata.
+
+Actual chart rendering is handled by the frontend.
 
 ---
 
 # Complete Response Example
 
-A complete analysis response follows this structure:
+A complete analysis response follows this general structure:
 
 ```json
 {
@@ -409,58 +454,108 @@ The exact contents depend on the uploaded dataset.
 
 # Error Handling
 
-Error handling will be expanded as file validation and frontend integration are developed.
+The current API is primarily designed around the successful CSV analysis workflow.
 
-The API should return appropriate HTTP status codes and meaningful error messages for cases such as:
+File validation and more detailed error handling can be expanded as the application evolves.
 
-* Invalid file types
-* Missing upload files
-* Empty datasets
-* Malformed CSV files
-* Dataset processing failures
+Potential error cases include:
+
+- Missing upload files
+- Invalid file types
+- Empty datasets
+- Malformed CSV files
+- Dataset processing failures
 
 The exact error response structure may evolve as the API matures.
 
 ---
 
-# Interactive Documentation
+# Interactive API Documentation
 
-FastAPI automatically generates interactive API documentation.
+FastAPI automatically generates interactive API documentation for the application.
 
 ## Swagger UI
+
+Local development:
 
 ```text
 http://127.0.0.1:8000/docs
 ```
 
+For a deployed application:
+
+```text
+http://<PUBLIC_IP>:8000/docs
+```
+
 Swagger UI allows developers to:
 
-* Explore endpoints
-* Upload datasets
-* Execute requests
-* Inspect request parameters
-* Inspect responses
-* Test the analysis pipeline
+- Explore available endpoints
+- Upload datasets
+- Execute requests
+- Inspect request parameters
+- Inspect responses
+- Test the analysis pipeline
 
 ---
 
 ## ReDoc
 
+Local development:
+
 ```text
 http://127.0.0.1:8000/redoc
+```
+
+For a deployed application:
+
+```text
+http://<PUBLIC_IP>:8000/redoc
 ```
 
 ReDoc provides a documentation-focused view of the API.
 
 ---
 
+# Deployment
+
+The backend is containerized using Docker.
+
+The Docker image can be run locally and is also used for the AWS deployment.
+
+The current AWS deployment uses:
+
+```text
+Docker
+   │
+   ▼
+Amazon ECR
+   │
+   ▼
+Amazon ECS
+   │
+   ▼
+AWS Fargate
+   │
+   ▼
+Data Detective API
+```
+
+The Docker image is stored in an Amazon ECR repository and deployed as an ECS Fargate task.
+
+The application listens on port `8000`.
+
+The current deployment does not use a load balancer or persistent application storage.
+
+---
+
 # Authentication
 
-Authentication is **not implemented** in the MVP.
+Authentication is **not implemented** in the current MVP.
 
-The current application is intended for local development and analysis.
+The API is currently intended for development, demonstration, and dataset analysis.
 
-Authentication and authorization may be introduced in future versions if features such as user accounts, saved analyses, or cloud deployment are added.
+Authentication and authorization may be introduced in a future version if features such as user accounts, saved analyses, or other protected resources are added.
 
 ---
 
@@ -472,7 +567,7 @@ The current API is an early development version.
 API Version: v0.1.0
 ```
 
-A formal versioning strategy will be introduced if and when the API becomes externally consumed.
+A formal API versioning strategy may be introduced if the API becomes externally consumed or develops multiple incompatible versions.
 
 ---
 
@@ -495,14 +590,17 @@ Potential future endpoints may include:
 
 ```text
 GET  /api/version
+
 GET  /api/report/{id}
+
 POST /api/export
+
 GET  /api/history
 ```
 
-These are future possibilities rather than currently implemented endpoints.
+These are **future possibilities only** and are not currently implemented.
 
-They should only be introduced when the corresponding application features are actually required.
+New endpoints should only be introduced when the corresponding application features are actually required.
 
 ---
 
@@ -537,3 +635,5 @@ Frontend
 The API is intentionally kept simple during the MVP phase.
 
 The primary goal is to provide a stable interface for the frontend while allowing the analysis engine and individual analyzers to evolve independently.
+
+The same containerized API can be run locally or deployed through AWS ECS with Fargate.
