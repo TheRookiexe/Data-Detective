@@ -80,7 +80,8 @@ The goal is not to replace a data analyst, but to reduce the time and effort req
 - ✅ Amazon ECS cluster
 - ✅ AWS Fargate deployment
 - ✅ Live AWS deployment verification
-- 🚧 Render deployment — next deployment target
+- ✅ Render deployment
+- ✅ Render deployment verification
 
 ---
 
@@ -191,30 +192,30 @@ Data Detective follows an API-first architecture with a clear separation between
                │ HTTP
                ▼
     ┌──────────────────────┐
-    │    FastAPI Backend   │
+    │    FastAPI Backend    │
     │                      │
     │ API Routes           │
     └──────────┬───────────┘
                │
                ▼
     ┌──────────────────────┐
-    │   Analysis Engine    │
+    │    Analysis Engine   │
     └──────────┬───────────┘
                │
        ┌───────┼────────┐
        │       │        │
        ▼       ▼        ▼
     Overview Quality Findings
-                         │
-                    ┌────┴────┐
-                    ▼         ▼
-             Recommendations Visualizations
-                    │         │
-                    └────┬────┘
-                         ▼
+                        │
+                   ┌────┴────┐
+                   ▼         ▼
+            Recommendations Visualizations
+                   │         │
+                   └────┬────┘
+                        ▼
                  Structured JSON
-                         │
-                         ▼
+                        │
+                        ▼
                  Frontend Dashboard
 
 The frontend communicates with the backend through REST API endpoints.
@@ -247,7 +248,7 @@ For a detailed architecture explanation, see [`docs/architecture.md`](docs/archi
 - Amazon ECR
 - Amazon ECS
 - AWS Fargate
-- Render — planned deployment target
+- Render
 
 ### Development
 
@@ -368,7 +369,9 @@ The application will then be available at:
 
     http://localhost:8000
 
-Docker was used to package the application and provide a consistent deployment environment across local development and cloud infrastructure.
+The Docker image is configured to use the runtime `PORT` environment variable when provided, while defaulting to port `8000` for local development.
+
+Docker provides a consistent deployment environment across local development and cloud infrastructure.
 
 ---
 
@@ -435,7 +438,7 @@ The exact results depend on the uploaded dataset.
 
 Data Detective has been containerized and deployed to AWS as part of the project's cloud deployment and verification process.
 
-### Deployment Architecture
+### AWS Deployment Architecture
 
     Docker Image
          │
@@ -453,10 +456,10 @@ Data Detective has been containerized and deployed to AWS as part of the project
 
 ### AWS Components
 
-- Amazon ECR — stores the Docker image
-- Amazon ECS — manages the container workload
-- AWS Fargate — runs the container without managing servers
-- IAM — provides the required deployment and task permissions
+- **Amazon ECR** — stores the Docker image
+- **Amazon ECS** — manages the container workload
+- **AWS Fargate** — runs the container without managing servers
+- **IAM** — provides the required deployment and task permissions
 
 The AWS deployment was successfully tested and the application was verified through its live endpoint and API documentation.
 
@@ -468,19 +471,17 @@ The AWS demonstration environment is kept minimal and the Fargate service is sto
 
 ## 🚀 Render Deployment
 
-The next deployment step for Data Detective is **Render**.
+Data Detective is also deployed to **Render** using the project's existing Dockerfile.
 
-The existing Dockerized application is being prepared for deployment on Render so that the project can have an additional hosted environment beyond the AWS demonstration deployment.
-
-### Planned Render Deployment
+### Render Deployment Architecture
 
     GitHub Repository
           │
           ▼
-      Render
+       Render
           │
           ▼
-    Docker Container
+    Docker Build
           │
           ▼
     Data Detective
@@ -488,17 +489,33 @@ The existing Dockerized application is being prepared for deployment on Render s
           ▼
     Public Web Application
 
-The Render deployment will be verified after deployment and this section will be updated with the live application URL.
+### Deployment Configuration
+
+- **Runtime:** Docker
+- **Region:** Singapore
+- **Compute:** Free instance
+- **Health Check:** `/api/health`
+- **Source:** GitHub
+- **Branch:** `main`
+- **Dockerfile:** Root-level `Dockerfile`
+
+The Dockerfile uses Render's runtime `PORT` environment variable while retaining port `8000` as the local fallback.
+
+### Live Application
+
+**Render:** `https://data-detective-mc5y.onrender.com`
 
 ### Deployment Status
 
 - ✅ Application containerized with Docker
 - ✅ Docker image tested locally
-- ✅ AWS ECR deployment completed
-- ✅ AWS ECS/Fargate deployment completed and verified
-- 🚧 Render deployment — next step
-- ⏳ Render deployment verification
-- ⏳ Live Render URL
+- ✅ Amazon ECR deployment completed
+- ✅ Amazon ECS/Fargate deployment completed and verified
+- ✅ Render deployment completed
+- ✅ Render deployment verified
+- ✅ Public hosted application
+
+> **Render Free plan note:** The application is hosted using Render's Free instance. Free services may spin down after inactivity and can take some time to wake when accessed again.
 
 ---
 
@@ -547,7 +564,8 @@ The Data Detective MVP has been completed and verified across the main applicati
 - [x] Amazon ECS setup
 - [x] AWS Fargate deployment
 - [x] Live AWS verification
-- [ ] Render deployment
+- [x] Render deployment
+- [x] Render deployment verification
 
 ---
 
@@ -610,7 +628,7 @@ The Data Detective MVP has been completed and verified across the main applicati
 
 ### Phase 6 — Additional Deployment & Hosting
 
-**Current**
+**Completed**
 
 - Render deployment
 - Render deployment verification
